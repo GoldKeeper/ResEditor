@@ -1,3 +1,3 @@
-Resource editor for http://origin-world.com/
-�������� �������� 
-редактор ресурсов
+﻿Resource editor for http://origin-world.com/
+
+редактор ресурсов 
