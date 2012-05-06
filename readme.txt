@@ -1,3 +1,4 @@
 ﻿Resource editor for http://origin-world.com/
 
-редактор ресурсов 
+UTF-8 редактор ресурсов 
+
