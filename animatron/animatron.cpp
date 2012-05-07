@@ -1,24 +1,26 @@
 #include "animatron.h"
 #include <QLayout>
-#include <QGridLayout>
+#include <QGridLayout> 
 #include <QLabel>
-#include <QSpacerItem>
+#include <QSpacerItem> 
 #include <QTreeWidget>
 #include <QPen>
 
 
-animatron::animatron(QWidget *parent, Qt::WFlags flags)
+animatron::animatron(QWidget *parent, Qt::WFlags flags, QString translateFile)
 	: QMainWindow(parent, flags)
 {
-	//QMessageBox::information(0,0,"animatron CONSTRUCTOR begin");
-	ui.setupUi(this); 
-        //imgCtr=new imgCuter(this, Qt::Window);
-        imgCtr=new imgCuter(this, Qt::Dialog);
-        //imgCtr->setWindowModality(Qt::ApplicationModal);
-        //imgCtr=new imgCuter(this, Qt::WindowStaysOnTopHint);
+        translator = new QTranslator(this);
+        if (!translateFile.isEmpty())
+        {
+            translator->load(translateFile);
+        }
+        qApp->installTranslator(translator);
 
-        //imgCtr->
-	//imgCtr->setWindowModality(Qt::WindowModal);
+
+	ui.setupUi(this); 
+        imgCtr=new imgCuter(this, Qt::Dialog, translateFile);
+
 	connect(imgCtr, SIGNAL(saveingData(int,int,int,int, QString)),this, SLOT(saveEditedImg(int,int,int,int, QString)));
 
 	ui.graphicsView->setScene(&scene);
@@ -30,26 +32,18 @@ animatron::animatron(QWidget *parent, Qt::WFlags flags)
 
 
 	drawObject = new draw();
-	setupUiImg();
-	//connectUi();//!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	setupUiImg();	
 
 	scene.setSceneRect(-100,-100,200,200);
 	createActions();	
 	
-	//ui.graphicsView->setBackgroundBrush(QPixmap(":/ResEditor/Resources/animatron/ground_greed.png"));
-
 	QPen pen = QPen(Qt::DotLine);
 	lineH = scene.addLine(-20000, 0, 20000, 0, pen);
 	lineV = scene.addLine(0, -20000, 0, 20000, pen);
-	//QMessageBox::information(0,0,"animatron CONSTRUCTOR end");
-// 	setSettings();
-// 	fillTree();
-        //setMouseTracking(true);
 }
 
 animatron::~animatron()
 {
-	//QMessageBox::information(0,0,"animatron DESTRUCTOR");
 	deleteAllObjects();
 	delete imgCtr;
 }
@@ -57,8 +51,6 @@ animatron::~animatron()
 
 void animatron::fillTree()
 {
-	//QMessageBox::information(0,0,"animatron FILLTREE begin");
-
 	ui.spinBox_w->setValue(drawObject->w);
 	ui.spinBox_h->setValue(drawObject->h);
 	ui.spinBox_x->setValue(drawObject->offset_x);
@@ -68,9 +60,8 @@ void animatron::fillTree()
 	ui.treeWidget->setRootIsDecorated(true);
 	TreeWidgetItemAnim * qtwi = new TreeWidgetItemAnim (ui.treeWidget, TreeWidgetItemAnim::SPRITES);
 	spriteTreeItem=	qtwi;
-		qtwi->setText(0,"спрайты");
+        qtwi->setText(0, tr("CРїСЂР°Р№С‚С‹"));
 		qtwi->setIcon(0,QPixmap(":/ResEditor/Resources/animatron/images.png"));
-		//qtwi->sprites= &sprites;
 			qtwi->widget= new QWidget();
 			QGridLayout * gridLayoutS = new QGridLayout(qtwi->widget);
 			qtwi->	gridLayout= gridLayoutS;
@@ -82,9 +73,9 @@ void animatron::fillTree()
 	while(si.hasNext())
 	{	
 		sprite * ps =si.next();
-		//создние своего итема и передача указателя на спрайт
+		//СЃРѕР·РґРЅРёРµ СЃРІРѕРµРіРѕ РёС‚РµРјР° Рё РїРµСЂРµРґР°С‡Р° СѓРєР°Р·Р°С‚РµР»СЏ РЅР° СЃРїСЂР°Р№С‚
 		TreeWidgetItemAnim * qtwis = new TreeWidgetItemAnim((QTreeWidgetItem *)qtwi, TreeWidgetItemAnim::ONE_SPRITE);
-			qtwis->setText(0,"спрайт");
+                qtwis->setText(0,tr("CРїСЂР°Р№С‚"));
 			qtwis->setIcon(0,QPixmap(":/ResEditor/Resources/animatron/image.png"));
 			qtwis->oneSprite=ps;
 			ps->widget = new WidgetControl();//new QWidget();
@@ -124,16 +115,15 @@ void animatron::fillTree()
 
 	qtwi = new TreeWidgetItemAnim (ui.treeWidget, TreeWidgetItemAnim::ANIMATIONS);
 	animationsTreeItem=qtwi;
-		qtwi->setText(0, "Анимации");
+        qtwi->setText(0, tr("РђРЅРёРјР°С†РёРё"));
 		qtwi->setIcon(0,QPixmap(":/ResEditor/Resources/animatron/folder-open-film.png"));
-	//	qtwi->animList=&animList;
 	QListIterator<anim*> ai(animList);
 	while(ai.hasNext())
 	{	
 		anim * pa =ai.next();
-		//создние своего итема и передача указателя на спрайт
+		//СЃРѕР·РґРЅРёРµ СЃРІРѕРµРіРѕ РёС‚РµРјР° Рё РїРµСЂРµРґР°С‡Р° СѓРєР°Р·Р°С‚РµР»СЏ РЅР° СЃРїСЂР°Р№С‚
 		TreeWidgetItemAnim * qtwia = new TreeWidgetItemAnim((QTreeWidgetItem *)qtwi, TreeWidgetItemAnim::ANIMATION_SET);
-		qtwia->setText(0, "анимация");
+                qtwia->setText(0, tr("РђРЅРёРјР°С†РёСЏ"));
 		qtwia->setIcon(0,QPixmap(":/ResEditor/Resources/animatron/films.png"));
 		qtwia->oneAnim=pa;
 		qtwia->widget= new QWidget();
@@ -143,7 +133,7 @@ void animatron::fillTree()
 		gridLayoutF->setSpacing(0);
 
 		i=0;
-//установка настроек анимации
+                //СѓСЃС‚Р°РЅРѕРІРєР° РЅР°СЃС‚СЂРѕРµРє Р°РЅРёРјР°С†РёРё
 		pa->widget = new WidgetControl();//new QWidget();
 		pa->widget->ui.label->setText("Time");
 		pa->spinBox_time = new QSpinBox(pa->widget->ui.label);
@@ -182,7 +172,7 @@ void animatron::fillTree()
 		{
 			frame * frm = fi.next();
 			TreeWidgetItemAnim * ftwi = new TreeWidgetItemAnim(qtwia, TreeWidgetItemAnim::ANIMATION_FRAME);
-			ftwi->setText(0, "фрейм");
+                        ftwi->setText(0, tr("Р¤СЂРµР№Рј"));
 			ftwi->setIcon(0,QPixmap(":/ResEditor/Resources/animatron/film.png"));
 			ftwi->oneFrame=frm;
 
@@ -217,7 +207,6 @@ void animatron::fillTree()
 			connect(frm->widget->ui.checkBox_visible, SIGNAL(toggled ( bool)), frm, SLOT(setVisiblity(bool)));
 			connect(frm->widget->ui.checkBox_use, SIGNAL(toggled ( bool)), frm, SLOT(setUsibility(bool)));
 
-                        //connect(frm->widget, SIGNAL(doubleClicked(QTreeWidgetItem *)), this, SLOT(clickedOnWidget(QTreeWidgetItem *)));
                         connect(frm->widget, SIGNAL(clicked(QTreeWidgetItem *)), this, SLOT(clickedOnWidget(QTreeWidgetItem *)));
                         connect(frm->widget, SIGNAL(doubleClicked(QTreeWidgetItem *)), this, SLOT(dbkClickedOnWidget(QTreeWidgetItem*)));
 
@@ -227,62 +216,10 @@ void animatron::fillTree()
 		QSpacerItem * verticalSpacerF = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 		gridLayoutF->addItem(verticalSpacerF, i, 0, 1, 1);
 	}
-	//QMessageBox::information(0,0,"animatron FILLTREE end");
 }
 
 void animatron::setSettings()
 {
-/*
-dir = ".";
-allTextures.insert("box_build","middleBox_build_lite.png");
-allTextures.insert("box","middleBox_closed_lite.png");
-allTextures.insert("box_opened","middleBox_opened_lite.png");
-allTextures.insert("stone_axe","stone_axe.png");
-*/
-
-/*
-drawObject->name="multibox";
-drawObject->offset_x=20;
-drawObject->offset_y=42;
-drawObject->w=44;
-drawObject->h=53;
-*/
-
-/*
-QPen pen = QPen(Qt::DotLine);
-pen.setColor(Qt::red);
-drawObject->drawRect= new QGraphicsRectItem(-drawObject->offset_x, -drawObject->offset_y, drawObject->w, drawObject->h,0,  &scene);
-drawObject->drawRect->setPen(pen);
-*/
-
-/*
-sprite * spr;
-spr= new sprite(10,0,0,"box_build",0,0,44,53);		sprites.append(spr);
-spr= new sprite(10,0,0,"box",0,0,44,53);			sprites.append(spr);
-spr= new sprite(10,0,0,"box_opened",0,0,44,53);		sprites.append(spr);
-// spr= new sprite(10,0,0,"box_build",0,0,44,53);		sprites.append(spr);
-// spr= new sprite(10,0,0,"box",0,0,44,53);			sprites.append(spr);
-// spr= new sprite(10,0,0,"box_opened",0,0,44,53);		sprites.append(spr);
-// spr= new sprite(10,0,0,"box_build",0,0,44,53);		sprites.append(spr);
-// spr= new sprite(10,0,0,"box",0,0,44,53);			sprites.append(spr);
-// spr= new sprite(10,0,0,"box_opened",0,0,44,53);		sprites.append(spr);
-
-*/
-
-/*
-anim * animated;
-animated = new anim(11, 0,0, 2000);
-animated->frames.append(new frame("box_build", 0,0,44,53));
-animated->frames.append(new frame("box", 0,0,44,53));
-animated->frames.append(new frame("box_opened", 0,0,44,53));
-//animList.append(animated);
-
-// animated = new anim(11, 0,0, 2000);
-// animated->frames.append(new frame("box_build", 0,0,44,53));
-// animated->frames.append(new frame("box", 0,0,44,53));
-// animated->frames.append(new frame("box_opened", 0,0,44,53));
- animList.append(animated);
-*/
 }
 
 
@@ -302,9 +239,7 @@ void animatron::setSettings( QDomNode _node )
 		drawObject->w=qstrlO[0].toInt();
 		drawObject->h=qstrlO[1].toInt();
 	}
-        updateScene();
-
-        //QMessageBox::information(0,0,QString("%1 %2 %3 %4 %5").arg(drawObject->offset_x).arg(drawObject->offset_y).arg(drawObject->w).arg(drawObject->h).arg(drawObject->name));
+        updateScene();        
 
 	ui.spinBox_w->setValue(drawObject->w);
 	ui.spinBox_h->setValue(drawObject->h);
@@ -345,16 +280,14 @@ void animatron::setSettings( QDomNode _node )
 	 	}
 		
 
-		anim * animated;
-                //QMessageBox::information(0,0,"_node "+_node.toElement().tagName());
+		anim * animated;                
 		QDomNodeList qdndAnim= _node.toElement().elementsByTagName("anim");
 		for (int dnl=0; dnl<qdndAnim.count(); dnl++)
 		{
 			animated = new anim();
 			animated->newAnim=false;
 			QDomNode node=qdndAnim.at(dnl);
-			animated->node=node;
-                        //QMessageBox::information(0,0,"node "+node.toElement().tagName());
+                        animated->node=node;
 			animated->z=node.toElement().attribute("z").toInt();
 			animated->time=node.toElement().attribute("time").toInt();
 			QStringList qstrlA=node.toElement().attribute("offset").split(",") ;			
@@ -371,15 +304,14 @@ void animatron::setSettings( QDomNode _node )
                                 for(int chlds =0; chlds<qdndFrameList.count(); chlds++)
                                 {
                                     QDomNode fnode = qdndFrameList.at(chlds);
-                                    //просто фрейм
+                                    //РїСЂРѕСЃС‚Рѕ С„СЂРµР№Рј
                                     if (fnode.toElement().tagName()=="frame")
                                     {
                                         oneFrame = new frame();
                                         oneFrame->newFrame=false;
                                         oneFrame->node=fnode;
                                         oneFrame->series=false;
-                                        oneFrame->texture=fnode.toElement().attribute("texture");
-                                        //QMessageBox::information(0,0,fnode.toElement().attribute("tex_rect"));
+                                        oneFrame->texture=fnode.toElement().attribute("texture");                                        
                                         QStringList qstrlFr=fnode.toElement().attribute("tex_rect").split(",") ;
                                         if(qstrlFr.count()==4)
                                                 {
@@ -391,10 +323,9 @@ void animatron::setSettings( QDomNode _node )
                                         animated->frames.append(oneFrame);
 
                                     }
-                                    //сеия фреймов
+                                    //СЃРµРёСЏ С„СЂРµР№РјРѕРІ
                                     else if (fnode.toElement().tagName()=="frames")
                                     {
-                                        //QMessageBox::information(0,0,"compressed frames");
                                         int size_w=0;
                                         int size_h=0;
                                         int count = fnode.toElement().attribute("count").toInt();
@@ -429,12 +360,11 @@ void animatron::setSettings( QDomNode _node )
                                                   oneFrame = new frame();
 
                                                   if(countOfFrames==1)
-                                                  oneFrame->node=fnode;//повторяется для первого(всех) в серии
+                                                  oneFrame->node=fnode;//РїРѕРІС‚РѕСЂСЏРµС‚СЃСЏ РґР»СЏ РїРµСЂРІРѕРіРѕ(РІСЃРµС…) РІ СЃРµСЂРёРё
 
                                                   oneFrame->newFrame=false;
                                                   oneFrame->series=true;
-                                                  oneFrame->seriesNum=countOfFrames-1;
-                                                  //if(oneFrame->seriesNum==0)oneFrame->node=fnode;
+                                                  oneFrame->seriesNum=countOfFrames-1;                                                  
                                                   oneFrame->texture=textureF;
                                                   oneFrame->tex_x=rect.left()+ size_w*numCol;
                                                   oneFrame->tex_y=rect.top() + size_h*numRow;
@@ -442,89 +372,9 @@ void animatron::setSettings( QDomNode _node )
                                                   oneFrame->tex_h=size_h;
                                                   animated->frames.append(oneFrame);
                                                 }
-                                        /*
-                                        int columnsF = rect.width()/size_w;
-                                        int rowsF = rect.height()/size_h;
-                                        oneFrame->tex_x=rect.left()+ size_w*numCol;
-                                        oneFrame->tex_y=rect.top() + size_h*numRow;
-                                        */
                                     }
 
                                 }
-
-                                /* * /
-                                //---------------------------------------обработка отдельных фреймов НАЧАЛО
-                                QDomNodeList qdndFrameList= node.toElement().elementsByTagName("frame");
-                                //QMessageBox::information(0,0,"frame tags "+QString::number(qdndFrameList.count()));
-				for (int dnl=0; dnl<qdndFrameList.count(); dnl++)
-                                {
-					//QMessageBox::information(0,0,"frame tag "+QString::number(dnl));
-					QDomNode fnode = qdndFrameList.at(dnl);
-					if(!fnode.toElement().hasAttribute("count"))//обычный фрейм
-					{
-                                                //QMessageBox::information(0,0,"normal frame");
-						oneFrame = new frame();
-						oneFrame->newFrame=false;
-						oneFrame->node=fnode;
-						oneFrame->series=false;
-						oneFrame->texture=fnode.toElement().attribute("texture");
-                                                //QMessageBox::information(0,0,fnode.toElement().attribute("text_rect"));
-                                                QStringList qstrlFr=fnode.toElement().attribute("tex_rect").split(",") ;
-						if(qstrlFr.count()==4)
-							{
-								oneFrame->tex_x=qstrlFr[0].toInt();
-								oneFrame->tex_y=qstrlFr[1].toInt();
-								oneFrame->tex_w=qstrlFr[2].toInt();
-								oneFrame->tex_h=qstrlFr[3].toInt();
-							}
-						animated->frames.append(oneFrame);
-					}
-					else//серия фреймов
-					{
-						//QMessageBox::information(0,0,"compressed frames");
-						int size_w=0;
-						int size_h=0;
-						int count = fnode.toElement().attribute("count").toInt();
-						if(count==0)continue;
-						QString textureF = fnode.toElement().attribute("texture");
-						if(!allTextures.contains(textureF))continue;
-						QStringList sizes = fnode.toElement().attribute("size").split(",");
-						if(sizes.count()==2)
-						{
-							size_w=sizes[0].toInt();
-							size_h=sizes[1].toInt();
-						}
-						QRect rect= QPixmap(dir+"/"+allTextures.value(textureF)).rect();
-						if((size_w==0)||(size_h==0))continue;
-						int columnsF = rect.width()/size_w;
-						int rowsF = rect.height()/size_h;
-						if ((columnsF*rowsF)>=count)
-						{
-						  int countOfFrames=0;
-						  for(int numRow=0; numRow<rowsF; numRow++)
-							for(int numCol=0; numCol<columnsF; numCol++)
-							{
-								if(countOfFrames==count)break;
-								countOfFrames++;
-								oneFrame = new frame();
-								if(countOfFrames==1)
-								oneFrame->node=fnode;//повторяется для первого(всех) в серии
-								oneFrame->newFrame=false;
-								oneFrame->series=true;
-								oneFrame->seriesNum=countOfFrames-1;
-								if(oneFrame->seriesNum==0)oneFrame->node=fnode;
-								oneFrame->texture=textureF;
-								oneFrame->tex_x=size_w*numCol;
-								oneFrame->tex_y=size_h*numRow;
-								oneFrame->tex_w=size_w;
-								oneFrame->tex_h=size_h;
-								animated->frames.append(oneFrame);
-							}
-						}
-					}
-                                }//---------------------------------обработка отдельных фреймов КОНЕЦ
-
-                                /**/
                         animList.append(animated);
 		}
 	fillTree();
@@ -533,7 +383,6 @@ void animatron::setSettings( QDomNode _node )
 QGraphicsPixmapItem * animatron::createGraphicsItem( QString _texture, int x, int y, int w, int h, QLabel * label )
 {
 	QGraphicsPixmapItem * gpi;
-	//QMessageBox::information(0,0,dir+"/"+allTextures.value(_texture));
 	QPixmap pixmap (dir+"/"+allTextures.value(_texture));
 	pixmap=pixmap.copy(x,y,w,h);
 	gpi= scene.addPixmap(pixmap);
@@ -563,8 +412,6 @@ void animatron::setupUiImg()
 	ui.btn_rb->setIcon(QPixmap(":/ResEditor/Resources/animatron/arrow-315.png"));
 	ui.btn_center->setIcon(QPixmap(":/ResEditor/Resources/animatron/hand.png"));
 	ui.btn_center->setEnabled(false);
-// 	ui.btn_up->setIcon(QPixmap(":/ResEditor/Resources/animatron/arrow-090.png"));
-// 	ui.btn_down->setIcon(QPixmap(":/ResEditor/Resources/animatron/arrow-270.png"));
 
 	connect(ui.btn_lt, SIGNAL(clicked()), SLOT(moveLT()));
 	connect(ui.btn_rt, SIGNAL(clicked()), SLOT(moveRT()));
@@ -589,7 +436,6 @@ void animatron::connectUi()
 
 void animatron::updateScene()
 {
-        //drawObject->drawRect;//->rect().x()
 		scene.setSceneRect(-drawObject->offset_x-20, -drawObject->offset_y-20,
 		drawObject->w+40,drawObject->h+40);
 }
@@ -607,12 +453,12 @@ void animatron::changeActiveItem( QTreeWidgetItem* currentItem, QTreeWidgetItem*
 
 	switch(currentItem->type())
 	{
-		case TreeWidgetItemAnim::SPRITES		 : ui.dockWidget_widgets->setWindowTitle("Спрайты объекта"); break;
+        case TreeWidgetItemAnim::SPRITES		 : ui.dockWidget_widgets->setWindowTitle(tr("РЎРїСЂР°Р№С‚С‹ РѕР±СЉРµРєС‚Р°")); break;
 		case TreeWidgetItemAnim::ONE_SPRITE	 : 
 				ui.scrollArea->takeWidget();
 				twia = (TreeWidgetItemAnim*)(currentItem->parent());
 				ui.scrollArea->setWidget(twia->widget);
-				ui.dockWidget_widgets->setWindowTitle("Спрайты объекта");
+                                ui.dockWidget_widgets->setWindowTitle(tr("РЎРїСЂР°Р№С‚С‹ РѕР±СЉРµРєС‚Р°"));
 			break;
 		case TreeWidgetItemAnim::ANIMATIONS	 : 
 			if(animList.count()>0)
@@ -620,19 +466,19 @@ void animatron::changeActiveItem( QTreeWidgetItem* currentItem, QTreeWidgetItem*
 				ui.scrollArea->takeWidget();
 				twia = (TreeWidgetItemAnim*)(currentItem->child(0));
 				ui.scrollArea->setWidget(twia->widget);
-				ui.dockWidget_widgets->setWindowTitle("Фреймы одной анимации");
+                                ui.dockWidget_widgets->setWindowTitle(tr("Р¤СЂРµР№РјС‹ РѕРґРЅРѕР№ Р°РЅРёРјР°С†РёРё"));
 			}
 			else
 			{
 				//QMessageBox::information(0,0,"ANIMATIONS childs count 0");
 			}
 			break;
-		case TreeWidgetItemAnim::ANIMATION_SET : ui.dockWidget_widgets->setWindowTitle("Фреймы одной анимации"); break;
+        case TreeWidgetItemAnim::ANIMATION_SET : ui.dockWidget_widgets->setWindowTitle(tr("Р¤СЂРµР№РјС‹ РѕРґРЅРѕР№ Р°РЅРёРјР°С†РёРё")); break;
 		case TreeWidgetItemAnim::ANIMATION_FRAME:
 				ui.scrollArea->takeWidget();
 				twia = (TreeWidgetItemAnim*)(currentItem->parent());
 				ui.scrollArea->setWidget(twia->widget);
-				ui.dockWidget_widgets->setWindowTitle("Фреймы одной анимации");
+                                ui.dockWidget_widgets->setWindowTitle(tr("Р¤СЂРµР№РјС‹ РѕРґРЅРѕР№ Р°РЅРёРјР°С†РёРё"));
 			break;
 
 	}
@@ -723,8 +569,8 @@ void animatron::deleteAllObjects()
 	{
 		sprite* sprt=sit.next();
 		delete sprt->widget;
-		delete sprt->graphicsItem; //удаление графического объекта
-		delete sprt->spriteRect;//удаление рамки
+		delete sprt->graphicsItem; //СѓРґР°Р»РµРЅРёРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
+		delete sprt->spriteRect;//СѓРґР°Р»РµРЅРёРµ СЂР°РјРєРё
 		delete sprt;
 	}
 	QListIterator<anim*> ait(animList);
@@ -745,68 +591,58 @@ void animatron::deleteAllObjects()
 
 void animatron::createActions()
 {
-	actStartAnimation = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/control.png"),"старт");
+    actStartAnimation = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/control.png"),tr("РЎС‚Р°СЂС‚"));
 	actStartAnimation->setCheckable(true);
 		connect(actStartAnimation,SIGNAL(toggled ( bool)),SLOT(startAnimation(bool)));
-// 	actPauseAnimation = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/control-pause.png"),"пауза");
-// 		connect(actPauseAnimation,SIGNAL(triggered ()),SLOT(pauseAnimation()));
-	actStopAnimation = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/control-stop-square.png"),"стоп");
+                actStopAnimation = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/control-stop-square.png"),tr("РЎС‚РѕРї"));
 		connect(actStopAnimation,SIGNAL(triggered ()),SLOT(stopAnimation()));
 
-// 		actStartAnimation->setEnabled(false);
-// 		actStopAnimation->setEnabled(false);
-// 		actPauseAnimation->setEnabled(false);
-
 	ui.mainToolBar->addSeparator();
-	actSaveDraw=ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/disk.png"),"сохранить");
+        actSaveDraw=ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/disk.png"),tr("РЎРѕС…СЂР°РЅРёС‚СЊ"));
 		connect(actSaveDraw, SIGNAL(triggered()), this,SLOT(slotSaveDraw()));
 
 	ui.mainToolBar->addSeparator();
-	actZoomIn= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/magnifier-zoom-in.png"),"приблизить");
+        actZoomIn= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/magnifier-zoom-in.png"),tr("РџСЂРёР±Р»РёР·РёС‚СЊ"));
 		connect(actZoomIn,SIGNAL(triggered()),SLOT(slotZoomIn()));
-	actZoomONE= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/magnifier-zoom-actual.png"),"1 к 1");
+                actZoomONE= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/magnifier-zoom-actual.png"),tr("РњР°СЃС€С‚Р°Р± 1:1"));
 		connect(actZoomONE,SIGNAL(triggered()),SLOT(slotZoomONE()));
-	actZoomOut= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/magnifier-zoom-out.png"),"удалить");
+                actZoomOut= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/magnifier-zoom-out.png"),tr("РћС‚РґР°Р»РёС‚СЊ"));
 		connect(actZoomOut,SIGNAL(triggered()),SLOT(slotZoomOut()));
-	actGround= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/ground.png"),"текстура земли");
+                actGround= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/ground.png"),tr("РўРµРєСЃС‚СѓСЂР° Р·РµРјР»Рё"));
 	actGround->setCheckable(true);
 		connect(actGround,SIGNAL(toggled(bool)),SLOT(slotGround(bool)));
-	actGreed= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/grid.png"),"сетка");
+                actGreed= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/grid.png"),tr("РЎРµС‚РєР°"));
 	actGreed->setCheckable(true);
 		connect(actGreed,SIGNAL(toggled(bool)),SLOT(slotGreed(bool)));
-	actTransparent= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/layer-transparent.png"),"прозрачность");
+                actTransparent= ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/layer-transparent.png"),tr("РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ"));
 	actTransparent->setCheckable(true);
 		connect(actTransparent,SIGNAL(toggled(bool)),SLOT(slotTransparent(bool)));
 
-		//actZoomIn->setEnabled(false);
-		//actZoomONE->setEnabled(false);
-		//actZoomOut->setEnabled(false);
-		
 		actGround->setChecked(true);
 		actGreed->setChecked(true);
 		actTransparent->setChecked(false);
 		transp=false;
 
 	ui.mainToolBar->addSeparator();
-	actAddSprite = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/image--plus.png"),"добавить спрайт");
+        actAddSprite = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/image--plus.png"),tr("Р”РѕР±Р°РІРёС‚СЊ СЃРїСЂР°Р№С‚"));
 		connect(actAddSprite,SIGNAL(triggered()),SLOT(addSprite()));
-	actRemoveSprite = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/image--minus.png"),"удалить спрайт");
+                actRemoveSprite = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/image--minus.png"),tr("РЈРґР°Р»РёС‚СЊ СЃРїСЂР°Р№С‚"));
 		connect(actRemoveSprite,SIGNAL(triggered()),SLOT(removeSprite()));
-	actEditSprite = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/image--pencil.png"),"изменить спрайт");
+                actEditSprite = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/image--pencil.png"),tr("РР·РјРµРЅРёС‚СЊ СЃРїСЂР°Р№С‚"));
 		connect(actEditSprite,SIGNAL(triggered()),SLOT(editSprite()));
-	actAddAnimation = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/films--plus.png"),"добавить анимацию");
+                actAddAnimation = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/films--plus.png"),tr("Р”РѕР±Р°РІРёС‚СЊ Р°РЅРёРјР°С†РёСЋ"));
 		connect(actAddAnimation,SIGNAL(triggered()),SLOT(addAnimation()));
-	actRemoveAnimation = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/films--minus.png"),"удалить анимацию");
+                actRemoveAnimation = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/films--minus.png"),tr("РЈРґР°Р»РёС‚СЊ Р°РЅРёРјР°С†РёСЋ"));
 		connect(actRemoveAnimation,SIGNAL(triggered()),SLOT(removeAnimation()));
-	actAddFrame = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--plus.png"),"добавить фрейм");
+                actAddFrame = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--plus.png"),tr("Р”РѕР±Р°РІРёС‚СЊ С„СЂРµР№Рј"));
 		connect(actAddFrame,SIGNAL(triggered()),SLOT(addFrame()));
-	actRemoveFrame = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--minus.png"),"удалить фрейм");
+                actRemoveFrame = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--minus.png"),tr("РЈРґР°Р»РёС‚СЊ С„СЂРµР№Рј"));
 		connect(actRemoveFrame,SIGNAL(triggered()),SLOT(removeFrame()));
-	actEditFrame = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--pencil.png"),"изменить фрейм");
+                actEditFrame = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--pencil.png"),tr("РР·РјРµРЅРёС‚СЊ С„СЂРµР№Рј"));
 		connect(actEditFrame,SIGNAL(triggered()),SLOT(editFrame()));
-	actMoveFrameUp = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--up.png"),"передвинуть фрейм выше");
+                actMoveFrameUp = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--up.png"),tr("РџРµСЂРµРґРІРёРЅСѓС‚СЊ С„СЂРµР№Рј РІС‹С€Рµ"));
 		connect(actMoveFrameUp,SIGNAL(triggered()),SLOT(moveFrameUp()));
-	actMoveFrameDown = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--down.png"),"передвинуть фрейм выше");
+                actMoveFrameDown = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--down.png"),tr("РџРµСЂРµРґРІРёРЅСѓС‚СЊ С„СЂРµР№Рј РЅРёР¶Рµ"));
 		connect(actMoveFrameDown,SIGNAL(triggered()),SLOT(moveFrameDown()));
 
 
@@ -888,9 +724,9 @@ void animatron::addNewSprite( int _z, int _dx, int _dy, QString _texture, int _x
 	ps= new sprite(_z,_dx,_dy,_texture,_x,_y,_w,_h);		
 	sprites.append(ps);
 
-	//создние своего итема и передача указателя на спрайт
+	//СЃРѕР·РґРЅРёРµ СЃРІРѕРµРіРѕ РёС‚РµРјР° Рё РїРµСЂРµРґР°С‡Р° СѓРєР°Р·Р°С‚РµР»СЏ РЅР° СЃРїСЂР°Р№С‚
  	TreeWidgetItemAnim * qtwis = new TreeWidgetItemAnim((QTreeWidgetItem *)spriteTreeItem, TreeWidgetItemAnim::ONE_SPRITE);
- 	qtwis->setText(0,"спрайт");
+        qtwis->setText(0,tr("СЃРїСЂР°Р№С‚"));
  	qtwis->setIcon(0,QPixmap(":/ResEditor/Resources/animatron/image.png"));
 	qtwis->oneSprite=ps;
  	ps->widget = new WidgetControl();//new QWidget();
@@ -920,7 +756,6 @@ void animatron::addNewSprite( int _z, int _dx, int _dy, QString _texture, int _x
  	connect(ps->widget->ui.spinBox_z, SIGNAL(valueChanged ( int)), ps, SLOT(set_z(int )));
 	connect(drawObject, SIGNAL(updatePos()), ps, SLOT(updatePos()));
 
-        //connect(ps->widget, SIGNAL(doubleClicked(QTreeWidgetItem *)), this, SLOT(clickedOnWidget(QTreeWidgetItem *)));
         connect(ps->widget, SIGNAL(clicked(QTreeWidgetItem *)), this, SLOT(clickedOnWidget(QTreeWidgetItem *)));
         connect(ps->widget, SIGNAL(doubleClicked(QTreeWidgetItem *)), this, SLOT(dbkClickedOnWidget(QTreeWidgetItem*)));
 
@@ -940,13 +775,13 @@ void animatron::removeSprite()
 	if(stwi->type()==TreeWidgetItemAnim::ONE_SPRITE)
 	{
 		uslessNodes.append(stwi->oneSprite->node);
-		delete stwi->oneSprite->widget;//удалить из грида виджет
-		sprites.removeOne(stwi->oneSprite);//удалить из листа
-		delete stwi->oneSprite->graphicsItem; //удаление графического объекта
-		delete stwi->oneSprite->spriteRect;//удаление рамки
-		delete stwi->oneSprite;//удалить сам объект
+		delete stwi->oneSprite->widget;//СѓРґР°Р»РёС‚СЊ РёР· РіСЂРёРґР° РІРёРґР¶РµС‚
+		sprites.removeOne(stwi->oneSprite);//СѓРґР°Р»РёС‚СЊ РёР· Р»РёСЃС‚Р°
+		delete stwi->oneSprite->graphicsItem; //СѓРґР°Р»РµРЅРёРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
+		delete stwi->oneSprite->spriteRect;//СѓРґР°Р»РµРЅРёРµ СЂР°РјРєРё
+		delete stwi->oneSprite;//СѓРґР°Р»РёС‚СЊ СЃР°Рј РѕР±СЉРµРєС‚
 		stwi->oneSprite=NULL;
-		stwi->parent()->removeChild(stwi);//удалить из дерева
+		stwi->parent()->removeChild(stwi);//СѓРґР°Р»РёС‚СЊ РёР· РґРµСЂРµРІР°
 	}
 }
 
@@ -976,9 +811,9 @@ void animatron::addNewAnim(int _z, int _offset_x, int _offset_y, int _time)
 {	
 	anim * pa = new anim(_z, _offset_x, _offset_y, _time);
 	animList.append(pa);
- 	//создние своего итема и передача указателя на спрайт
+ 	//СЃРѕР·РґРЅРёРµ СЃРІРѕРµРіРѕ РёС‚РµРјР° Рё РїРµСЂРµРґР°С‡Р° СѓРєР°Р·Р°С‚РµР»СЏ РЅР° СЃРїСЂР°Р№С‚
  	TreeWidgetItemAnim * qtwia = new TreeWidgetItemAnim(animationsTreeItem, TreeWidgetItemAnim::ANIMATION_SET);
- 	qtwia->setText(0, "анимация");
+        qtwia->setText(0, tr("Р°РЅРёРјР°С†РёСЏ"));
  	qtwia->setIcon(0,QPixmap(":/ResEditor/Resources/animatron/films.png"));
  	qtwia->oneAnim=pa;
  	qtwia->widget= new QWidget();
@@ -987,9 +822,9 @@ void animatron::addNewAnim(int _z, int _offset_x, int _offset_y, int _time)
  	gridLayoutF->setContentsMargins(0,0,0,0);
  	gridLayoutF->setSpacing(0);
  
- 	//установка настроек анимации
+ 	//СѓСЃС‚Р°РЅРѕРІРєР° РЅР°СЃС‚СЂРѕРµРє Р°РЅРёРјР°С†РёРё
  	pa->widget = new WidgetControl();
- 	pa->widget->ui.label->setText("Time");
+        pa->widget->ui.label->setText(tr("Р’СЂРµРјСЏ"));
  	pa->spinBox_time = new QSpinBox(pa->widget->ui.label);
  	pa->spinBox_time->setGeometry(pa->widget->ui.label->x(),pa->widget->ui.label->y(),60, 20 );
  	pa->spinBox_time->setMaximum(20000);
@@ -1020,7 +855,7 @@ void animatron::addNewAnim(int _z, int _offset_x, int _offset_y, int _time)
 
 void animatron::removeAnimation()
 {
-	//обойти и удалить сначала все фреймы
+	//РѕР±РѕР№С‚Рё Рё СѓРґР°Р»РёС‚СЊ СЃРЅР°С‡Р°Р»Р° РІСЃРµ С„СЂРµР№РјС‹
 	QTreeWidgetItem * treeWidgetItem = ui.treeWidget->currentItem();
 	if (treeWidgetItem->type()==TreeWidgetItemAnim::ANIMATION_FRAME)
 	{
@@ -1047,13 +882,34 @@ void animatron::removeAnimation()
 
 void animatron::addFrame()
 {
-	addNewFrame("", 0,0,0,0);
+    QTreeWidgetItem * twi = NULL;
+    if(ui.treeWidget->currentItem()->type()== TreeWidgetItemAnim::ANIMATION_SET)
+    {
+        if(ui.treeWidget->currentItem()->childCount()>0)
+        {
+            twi = ui.treeWidget->currentItem()->child(ui.treeWidget->currentItem()->childCount()-1);
+        }
+    }
+    else if (ui.treeWidget->currentItem()->type()== TreeWidgetItemAnim::ANIMATION_FRAME)
+    {
+        twi = ui.treeWidget->currentItem()->parent()->child(ui.treeWidget->currentItem()->parent()->childCount()-1);
+    }
+
+    if (twi!=NULL)
+    {
+        TreeWidgetItemAnim * twa = static_cast<TreeWidgetItemAnim *>(twi);
+        addNewFrame(twa->oneFrame->texture,
+                    twa->oneFrame->tex_x + twa->oneFrame->tex_w,
+                    twa->oneFrame->tex_y,
+                    twa->oneFrame->tex_w,
+                    twa->oneFrame->tex_h);
+    }
+    else
+        addNewFrame("", 0,0,1,1);
 }
 
 void animatron::addNewFrame( QString _texture, int _x, int _y, int _w, int _h )
 {
-	
-
 	QTreeWidgetItem * treeWidgetItem = ui.treeWidget->currentItem();
 	if (treeWidgetItem->type()==TreeWidgetItemAnim::ANIMATION_FRAME)
 	{
@@ -1068,7 +924,7 @@ void animatron::addNewFrame( QString _texture, int _x, int _y, int _w, int _h )
 	TreeWidgetItemAnim * ftwi = new TreeWidgetItemAnim(treeWidgetItem, TreeWidgetItemAnim::ANIMATION_FRAME);
 	frame * frm = new frame(_texture, _x,_y,_w,_h);
 	((TreeWidgetItemAnim*)treeWidgetItem)->oneAnim->frames.append(frm);
-	ftwi->setText(0, "фрейм");
+        ftwi->setText(0, tr("Р¤СЂРµР№Рј"));
 	ftwi->setIcon(0,QPixmap(":/ResEditor/Resources/animatron/film.png"));
 	ftwi->oneFrame=frm;
 	frm->widget = new WidgetControl();//new QWidget();
@@ -1103,7 +959,6 @@ void animatron::addNewFrame( QString _texture, int _x, int _y, int _w, int _h )
   	connect(frm->widget->ui.checkBox_visible, SIGNAL(toggled ( bool)), frm, SLOT(setVisiblity(bool)));
   	connect(frm->widget->ui.checkBox_use, SIGNAL(toggled ( bool)), frm, SLOT(setUsibility(bool)));
 
-        //connect(frm->widget, SIGNAL(doubleClicked(QTreeWidgetItem *)), this, SLOT(clickedOnWidget(QTreeWidgetItem *)));
         connect(frm->widget, SIGNAL(clicked(QTreeWidgetItem *)), this, SLOT(clickedOnWidget(QTreeWidgetItem *)));
         connect(frm->widget, SIGNAL(doubleClicked(QTreeWidgetItem *)), this, SLOT(dbkClickedOnWidget(QTreeWidgetItem*)));
 
@@ -1127,13 +982,13 @@ void animatron::removeFrame( QTreeWidgetItem * _twi)
 	if(stwi->type()==TreeWidgetItemAnim::ANIMATION_FRAME)
 	{
 		uslessNodes.append(stwi->oneFrame->node);
-		delete stwi->oneFrame->widget;//удалить из грида виджет
-		((TreeWidgetItemAnim*)stwi->parent())->oneAnim->frames.removeOne(stwi->oneFrame);//sprites.removeOne(stwi->oneSprite);//удалить из листа
- 		delete stwi->oneFrame->graphicsItem; //удаление графического объекта
- 		delete stwi->oneFrame->frmRect;//удаление рамки
- 		delete stwi->oneFrame;//удалить сам объект
+		delete stwi->oneFrame->widget;//СѓРґР°Р»РёС‚СЊ РёР· РіСЂРёРґР° РІРёРґР¶РµС‚
+		((TreeWidgetItemAnim*)stwi->parent())->oneAnim->frames.removeOne(stwi->oneFrame);//sprites.removeOne(stwi->oneSprite);//СѓРґР°Р»РёС‚СЊ РёР· Р»РёСЃС‚Р°
+ 		delete stwi->oneFrame->graphicsItem; //СѓРґР°Р»РµРЅРёРµ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕР±СЉРµРєС‚Р°
+ 		delete stwi->oneFrame->frmRect;//СѓРґР°Р»РµРЅРёРµ СЂР°РјРєРё
+ 		delete stwi->oneFrame;//СѓРґР°Р»РёС‚СЊ СЃР°Рј РѕР±СЉРµРєС‚
 		stwi->oneFrame=NULL;
- 		delete  stwi;//удалить из дерева
+ 		delete  stwi;//СѓРґР°Р»РёС‚СЊ РёР· РґРµСЂРµРІР°
 	}
 }
 
@@ -1169,7 +1024,6 @@ void animatron::saveEditedImg( int _x,int _y,int _w, int _h, QString _texture)
 {
 	TreeWidgetItemAnim * treeItem = (TreeWidgetItemAnim *)ui.treeWidget->currentItem();
 	if(treeItem==NULL) return;
-	//WidgetControl * wc;
 		if (treeItem->type()==TreeWidgetItemAnim::ONE_SPRITE)
 		{
 			sprite * oneSprite = ((TreeWidgetItemAnim*)treeItem)->oneSprite;//->widget;//->ui.frame_panel->setFrameStyle(QFrame::Panel | QFrame::Raised);
@@ -1194,7 +1048,6 @@ void animatron::saveEditedImg( int _x,int _y,int _w, int _h, QString _texture)
 
 void animatron::updateSprite( sprite* _sprite)
 {
-	//_sprite->spriteRect->SetRect();
 	_sprite->graphicsItem->setPixmap(QPixmap(dir+"/"+allTextures.value(_sprite->texture))
 										.copy(_sprite->tex_x,_sprite->tex_y, _sprite->tex_w, _sprite->tex_h ));
 	QPixmap pxm =_sprite->graphicsItem->pixmap();
@@ -1251,7 +1104,6 @@ void animatron::slotSaveDraw()
 			else
 			{
 				node.insertBefore(_sprite->node, QDomNode());
-				//node.appendChild(_sprite->node);
 			}
 		}
 		_sprite->node.toElement().setAttribute("z", _sprite->z);
@@ -1269,7 +1121,6 @@ void animatron::slotSaveDraw()
 	QListIterator<anim *> animIterator(animList);
 	while(animIterator.hasNext())
 	{
-            //QMessageBox::information(0,0,"анимация");
 		anim * _anim = animIterator.next();
 			
 		if(_anim->newAnim)
@@ -1281,7 +1132,6 @@ void animatron::slotSaveDraw()
 			}
 			else
 			{
-				//node.insertAfter(_anim->node, QDomNode());
 				node.appendChild(_anim->node);
 			}
 		}
@@ -1294,12 +1144,9 @@ void animatron::slotSaveDraw()
 	
 		QDomNode lastAddedNode = QDomNode();
 		QDomNode lastNodeF;
-		//bool hasLastF=false;
 		bool seriesBegin=false;
-		bool seriesEndOnPrevious=false;
 		QDomNode seriesNode;
 		int lastSF;
-		//int currentSF;
 		frame * _frame;
 		frame * _LASTframe;
 		frame * _seriesFrame;
@@ -1307,66 +1154,66 @@ void animatron::slotSaveDraw()
                 QListIterator<frame*> frameIterator(_anim->frames);
                 while(frameIterator.hasNext())
                 {
-                    //QMessageBox::information(0,0,"фрейм");
+                    //QMessageBox::information(0,0,"С„СЂРµР№Рј");
                     _frame = frameIterator.next();
-                    if(_frame->series)//если серия
+                    if(_frame->series)//РµСЃР»Рё СЃРµСЂРёСЏ
                     {
-                         //QMessageBox::information(0,0,"он в серии");
-                        if(_frame->seriesNum==0)//если номер в серии 0 - тоесть это первый / серия началась
+                         //QMessageBox::information(0,0,"РѕРЅ РІ СЃРµСЂРёРё");
+                        if(_frame->seriesNum==0)//РµСЃР»Рё РЅРѕРјРµСЂ РІ СЃРµСЂРёРё 0 - С‚РѕРµСЃС‚СЊ СЌС‚Рѕ РїРµСЂРІС‹Р№ / СЃРµСЂРёСЏ РЅР°С‡Р°Р»Р°СЃСЊ
                         {
-                            //ПРОВЕРИТЬ НА ОКОНЧЕННОСТЬ ПРОШЛОЙ СЕРИИ
-                           //QMessageBox::information(0,0,"причём ПЕРВЫЙ");
-                            seriesBegin=true;//серия началась
-                            lastSF=0;//последним фреймом был первый (этот)
-                            _LASTframe=_frame;//последний фрейм - это текущий
-                            _seriesFrame=_frame;//последний фрейм серии - это текущий
+                            //РџР РћР’Р•Р РРўР¬ РќРђ РћРљРћРќР§Р•РќРќРћРЎРўР¬ РџР РћРЁР›РћР™ РЎР•Р РР
+                           //QMessageBox::information(0,0,"РїСЂРёС‡С‘Рј РџР•Р Р’Р«Р™");
+                            seriesBegin=true;//СЃРµСЂРёСЏ РЅР°С‡Р°Р»Р°СЃСЊ
+                            lastSF=0;//РїРѕСЃР»РµРґРЅРёРј С„СЂРµР№РјРѕРј Р±С‹Р» РїРµСЂРІС‹Р№ (СЌС‚РѕС‚)
+                            _LASTframe=_frame;//РїРѕСЃР»РµРґРЅРёР№ С„СЂРµР№Рј - СЌС‚Рѕ С‚РµРєСѓС‰РёР№
+                            _seriesFrame=_frame;//РїРѕСЃР»РµРґРЅРёР№ С„СЂРµР№Рј СЃРµСЂРёРё - СЌС‚Рѕ С‚РµРєСѓС‰РёР№
 
 
-                            if(_LASTframe->newFrame)//если фрейм новый то дабавлена новая серия / нужно создать узел
+                            if(_LASTframe->newFrame)//РµСЃР»Рё С„СЂРµР№Рј РЅРѕРІС‹Р№ С‚Рѕ РґР°Р±Р°РІР»РµРЅР° РЅРѕРІР°СЏ СЃРµСЂРёСЏ / РЅСѓР¶РЅРѕ СЃРѕР·РґР°С‚СЊ СѓР·РµР»
                                {
-                                    //QMessageBox::information(0,0,"и узла пока нету");
+                                    //QMessageBox::information(0,0,"Рё СѓР·Р»Р° РїРѕРєР° РЅРµС‚Сѓ");
                                     seriesNode = document0.createElement("frames");
-                                    if(lastAddedNode.isNull())//небыло элементов.. добавляем в начало
+                                    if(lastAddedNode.isNull())//РЅРµР±С‹Р»Рѕ СЌР»РµРјРµРЅС‚РѕРІ.. РґРѕР±Р°РІР»СЏРµРј РІ РЅР°С‡Р°Р»Рѕ
                                     {_anim->node.insertBefore(seriesNode, QDomNode());
-                                        //QMessageBox::information(0,0,"начало серии добавлен в начало");
+                                        //QMessageBox::information(0,0,"РЅР°С‡Р°Р»Рѕ СЃРµСЂРёРё РґРѕР±Р°РІР»РµРЅ РІ РЅР°С‡Р°Р»Рѕ");
                                     }
-                                    else //элементы были юю добвляем после последнего
+                                    else //СЌР»РµРјРµРЅС‚С‹ Р±С‹Р»Рё СЋСЋ РґРѕР±РІР»СЏРµРј РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ
                                     {_anim->node.insertAfter(seriesNode, lastAddedNode);
-                                        //QMessageBox::information(0,0,"начало серии добавлен в конец");
+                                        //QMessageBox::information(0,0,"РЅР°С‡Р°Р»Рѕ СЃРµСЂРёРё РґРѕР±Р°РІР»РµРЅ РІ РєРѕРЅРµС†");
                                     }
                                     lastAddedNode = _frame->node;
-                                    //атрибут текстуры
+                                    //Р°С‚СЂРёР±СѓС‚ С‚РµРєСЃС‚СѓСЂС‹
                                     seriesNode.toElement().setAttribute("texture", _LASTframe->texture);
-                                    //атрибут количества повторяющихся фреймов
-                                    seriesNode.toElement().setAttribute("count", (_LASTframe->seriesNum+1)); //_LASTframe->seriesNum;//устанавливается выражение оставлно для логики 1
-                                    //размер изображения фрейма
+                                    //Р°С‚СЂРёР±СѓС‚ РєРѕР»РёС‡РµСЃС‚РІР° РїРѕРІС‚РѕСЂСЏСЋС‰РёС…СЃСЏ С„СЂРµР№РјРѕРІ
+                                    seriesNode.toElement().setAttribute("count", (_LASTframe->seriesNum+1)); //_LASTframe->seriesNum;//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ РІС‹СЂР°Р¶РµРЅРёРµ РѕСЃС‚Р°РІР»РЅРѕ РґР»СЏ Р»РѕРіРёРєРё 1
+                                    //СЂР°Р·РјРµСЂ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ С„СЂРµР№РјР°
                                     seriesNode.toElement().setAttribute("size", QString("%1, %2").arg(_LASTframe->tex_w).arg(_LASTframe->tex_h));
 
                                     _seriesFrame->node=seriesNode;
                                 }
-                            else    //узел уже существовал
+                            else    //СѓР·РµР» СѓР¶Рµ СЃСѓС‰РµСЃС‚РІРѕРІР°Р»
                                 {
-                                    //QMessageBox::information(0,0,"а вот узел уже есть");
-                                    //отмечаем(запоминаем) существовавший узел послидним узлом
+                                    //QMessageBox::information(0,0,"Р° РІРѕС‚ СѓР·РµР» СѓР¶Рµ РµСЃС‚СЊ");
+                                    //РѕС‚РјРµС‡Р°РµРј(Р·Р°РїРѕРјРёРЅР°РµРј) СЃСѓС‰РµСЃС‚РІРѕРІР°РІС€РёР№ СѓР·РµР» РїРѕСЃР»РёРґРЅРёРј СѓР·Р»РѕРј
                                     seriesNode = _frame->node;
 
-                                    if(lastAddedNode.isNull())//небыло элементов.. добавляем в начало
+                                    if(lastAddedNode.isNull())//РЅРµР±С‹Р»Рѕ СЌР»РµРјРµРЅС‚РѕРІ.. РґРѕР±Р°РІР»СЏРµРј РІ РЅР°С‡Р°Р»Рѕ
                                     {_anim->node.insertBefore(seriesNode, QDomNode());
-                                        //QMessageBox::information(0,0,"начало серии был добавлен в начало");
+                                        //QMessageBox::information(0,0,"РЅР°С‡Р°Р»Рѕ СЃРµСЂРёРё Р±С‹Р» РґРѕР±Р°РІР»РµРЅ РІ РЅР°С‡Р°Р»Рѕ");
                                     }
-                                    else //элементы были юю добвляем после последнего
+                                    else //СЌР»РµРјРµРЅС‚С‹ Р±С‹Р»Рё СЋСЋ РґРѕР±РІР»СЏРµРј РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ
                                     {_anim->node.insertAfter(seriesNode, lastAddedNode);
-                                        //QMessageBox::information(0,0,"начало серии был добавлен в конец");
+                                        //QMessageBox::information(0,0,"РЅР°С‡Р°Р»Рѕ СЃРµСЂРёРё Р±С‹Р» РґРѕР±Р°РІР»РµРЅ РІ РєРѕРЅРµС†");
                                     }
                                     lastAddedNode = _frame->node;
                                  }
-                            //запоминаем какой узел был последним
+                            //Р·Р°РїРѕРјРёРЅР°РµРј РєР°РєРѕР№ СѓР·РµР» Р±С‹Р» РїРѕСЃР»РµРґРЅРёРј
                             lastNodeF=seriesNode;
                         }
-                        else if(_frame->seriesNum==(lastSF+1))//это следующий по очереди в последовательности(не выбивается)
+                        else if(_frame->seriesNum==(lastSF+1))//СЌС‚Рѕ СЃР»РµРґСѓСЋС‰РёР№ РїРѕ РѕС‡РµСЂРµРґРё РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё(РЅРµ РІС‹Р±РёРІР°РµС‚СЃСЏ)
                         {
-                            //QMessageBox::information(0,0, QString("он в серии и по номеру %1").arg(_frame->seriesNum));
-                            //нужно проверить фрейм на вхождение в серию по вхождению в область
+                            //QMessageBox::information(0,0, QString("РѕРЅ РІ СЃРµСЂРёРё Рё РїРѕ РЅРѕРјРµСЂСѓ %1").arg(_frame->seriesNum));
+                            //РЅСѓР¶РЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ С„СЂРµР№Рј РЅР° РІС…РѕР¶РґРµРЅРёРµ РІ СЃРµСЂРёСЋ РїРѕ РІС…РѕР¶РґРµРЅРёСЋ РІ РѕР±Р»Р°СЃС‚СЊ
                             QRect rect(0,0,0,0);//= QPixmap(dir+"/"+allTextures.value(textureF)).rect();
                             QStringList qstrlFr=_seriesFrame->node.toElement().attribute("tex_rect").split(",");
                             if(qstrlFr.count()==4)
@@ -1381,35 +1228,36 @@ void animatron::slotSaveDraw()
                             int numCol=_frame->seriesNum%columnsF;
                             int numRow=_frame->seriesNum/columnsF;
 
-                            //если совпадают размеры фрейма
+                            //РµСЃР»Рё СЃРѕРІРїР°РґР°СЋС‚ СЂР°Р·РјРµСЂС‹ С„СЂРµР№РјР°
                             bool frmInS= false;
                             //QMessageBox::information(0,0,QString("%1 + %2 ==  %3   %4 + %5 == %6   %7 %8")
                             //                        .arg(rect.left()).arg(_frame->tex_w*numCol).arg(_frame->tex_x)
                             //                         .arg(rect.top() ).arg(_frame->tex_h*numRow).arg(_frame->tex_y)
                             //                        );
                             if ((_LASTframe->tex_w == _seriesFrame->tex_w)&&(_LASTframe->tex_h == _seriesFrame->tex_h))
-                                //и совпадают координаты (координаты такие какие должны быть)
+                                //Рё СЃРѕРІРїР°РґР°СЋС‚ РєРѕРѕСЂРґРёРЅР°С‚С‹ (РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚Р°РєРёРµ РєР°РєРёРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ)
                                 if(((rect.left()+ _frame->tex_w*numCol) ==_frame->tex_x) &&
                                         ((rect.top() + _frame->tex_h*numRow) == _frame->tex_y))
                                     {   //
-                                        //QMessageBox::information(0,0," проверено он реально внутри серии");
+                                        //QMessageBox::information(0,0," РїСЂРѕРІРµСЂРµРЅРѕ РѕРЅ СЂРµР°Р»СЊРЅРѕ РІРЅСѓС‚СЂРё СЃРµСЂРёРё");
                                         _seriesFrame->node.toElement().setAttribute("count", _frame->seriesNum+1);
                                         frmInS=true;
 
-                                        lastSF=_frame->seriesNum; //последний фрейм - это текущий
+                                        lastSF=_frame->seriesNum; //РїРѕСЃР»РµРґРЅРёР№ С„СЂРµР№Рј - СЌС‚Рѕ С‚РµРєСѓС‰РёР№
                                     }
-                            //фрейм выбивается из серии это отдельный фрейм
+                            //С„СЂРµР№Рј РІС‹Р±РёРІР°РµС‚СЃСЏ РёР· СЃРµСЂРёРё СЌС‚Рѕ РѕС‚РґРµР»СЊРЅС‹Р№ С„СЂРµР№Рј
                             if (!frmInS)
                             {
-                                //QMessageBox::information(0,0," проверено он реально НЕ внутри серии");
-                                //помечаем что фрейм больше не в серии
+                                //QMessageBox::information(0,0," РїСЂРѕРІРµСЂРµРЅРѕ РѕРЅ СЂРµР°Р»СЊРЅРѕ РќР• РІРЅСѓС‚СЂРё СЃРµСЂРёРё");
+                                //РїРѕРјРµС‡Р°РµРј С‡С‚Рѕ С„СЂРµР№Рј Р±РѕР»СЊС€Рµ РЅРµ РІ СЃРµСЂРёРё
                                 _frame->series=false;                                
                                 _frame->widget->lbl->setText("");
                                // _frame->widget->ui.
-                                //если  там указан нод серии - то создаём новый нод простого фрейма
+                                //РµСЃР»Рё  С‚Р°Рј СѓРєР°Р·Р°РЅ РЅРѕРґ СЃРµСЂРёРё - С‚Рѕ СЃРѕР·РґР°С‘Рј РЅРѕРІС‹Р№ РЅРѕРґ РїСЂРѕСЃС‚РѕРіРѕ С„СЂРµР№РјР°
                                // if((_frame->node.isNull()/*==QDomNode()*/)||
                                //         (_frame->node.toElement().tagName()=="frames"))
-                                //создаём новый узел
+
+                                //СЃРѕР·РґР°С‘Рј РЅРѕРІС‹Р№ СѓР·РµР»
                                 {
                                     _frame->node=document0.createElement("frame");
                                     //_frame->node.toElement().setAttribute("size", QString("%1, %2").arg().arg());
@@ -1417,54 +1265,54 @@ void animatron::slotSaveDraw()
                                                                           .arg(_frame->tex_x).arg(_frame->tex_y).arg(_frame->tex_w).arg(_frame->tex_h));
                                     _frame->node.toElement().setAttribute("texture", _frame->texture);
 
-                                    if(lastAddedNode.isNull())//небыло элементов.. добавляем в начало
+                                    if(lastAddedNode.isNull())//РЅРµР±С‹Р»Рѕ СЌР»РµРјРµРЅС‚РѕРІ.. РґРѕР±Р°РІР»СЏРµРј РІ РЅР°С‡Р°Р»Рѕ
                                     {_anim->node.insertBefore(_frame->node, QDomNode());}
-                                    else //элементы были юю добвляем после последнего
+                                    else //СЌР»РµРјРµРЅС‚С‹ Р±С‹Р»Рё СЋСЋ РґРѕР±РІР»СЏРµРј РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ
                                     {_anim->node.insertAfter(_frame->node, lastAddedNode);}
                                     lastAddedNode = _frame->node;
                                 }
                             }
                              _LASTframe=_frame;
-                            //если входит то ОБНОВЛЯЕМ количество фреймов и продолжаем поиск
-                            //если не входит значит это новый фрейм и серия кончилась на предыдущем
+                            //РµСЃР»Рё РІС…РѕРґРёС‚ С‚Рѕ РћР‘РќРћР’Р›РЇР•Рњ РєРѕР»РёС‡РµСЃС‚РІРѕ С„СЂРµР№РјРѕРІ Рё РїСЂРѕРґРѕР»Р¶Р°РµРј РїРѕРёСЃРє
+                            //РµСЃР»Рё РЅРµ РІС…РѕРґРёС‚ Р·РЅР°С‡РёС‚ СЌС‚Рѕ РЅРѕРІС‹Р№ С„СЂРµР№Рј Рё СЃРµСЂРёСЏ РєРѕРЅС‡РёР»Р°СЃСЊ РЅР° РїСЂРµРґС‹РґСѓС‰РµРј
                         }
-                        else //этот выпадает из серии хоть и был помечен как в серии
+                        else //СЌС‚РѕС‚ РІС‹РїР°РґР°РµС‚ РёР· СЃРµСЂРёРё С…РѕС‚СЊ Рё Р±С‹Р» РїРѕРјРµС‡РµРЅ РєР°Рє РІ СЃРµСЂРёРё
                         {
-                            //QMessageBox::information(0,0, QString("!он НЕ в серии и по номеру %1").arg(_frame->seriesNum));
-                            //нужно закончить серию
-                            //завершаем
+                            //QMessageBox::information(0,0, QString("!РѕРЅ РќР• РІ СЃРµСЂРёРё Рё РїРѕ РЅРѕРјРµСЂСѓ %1").arg(_frame->seriesNum));
+                            //РЅСѓР¶РЅРѕ Р·Р°РєРѕРЅС‡РёС‚СЊ СЃРµСЂРёСЋ
+                            //Р·Р°РІРµСЂС€Р°РµРј
                             seriesBegin=false;
 
-                            //просто добавляем в фрейм узел
+                            //РїСЂРѕСЃС‚Рѕ РґРѕР±Р°РІР»СЏРµРј РІ С„СЂРµР№Рј СѓР·РµР»
 
-                            //узел добавляем анимацию
-                            //помечаем его как НЕ в серии и убираем лейбел серии
+                            //СѓР·РµР» РґРѕР±Р°РІР»СЏРµРј Р°РЅРёРјР°С†РёСЋ
+                            //РїРѕРјРµС‡Р°РµРј РµРіРѕ РєР°Рє РќР• РІ СЃРµСЂРёРё Рё СѓР±РёСЂР°РµРј Р»РµР№Р±РµР» СЃРµСЂРёРё
                             _frame->series=false;
                             _frame->widget->lbl->setText("");
-                            //создаём новый узел
+                            //СЃРѕР·РґР°С‘Рј РЅРѕРІС‹Р№ СѓР·РµР»
                                 _frame->node=document0.createElement("frame");
                                 _frame->node.toElement().setAttribute("tex_rect", QString("%1, %2, %3, %4")
                                                                       .arg(_frame->tex_x).arg(_frame->tex_y).arg(_frame->tex_w).arg(_frame->tex_h));
                                 _frame->node.toElement().setAttribute("texture", _frame->texture);
 
-                                if(lastAddedNode.isNull())//небыло элементов.. добавляем в начало
-                                {_anim->node.insertBefore(_frame->node, QDomNode()); //QMessageBox::information(0,0,"создан свободный добавлен в начало");
+                                if(lastAddedNode.isNull())//РЅРµР±С‹Р»Рѕ СЌР»РµРјРµРЅС‚РѕРІ.. РґРѕР±Р°РІР»СЏРµРј РІ РЅР°С‡Р°Р»Рѕ
+                                {_anim->node.insertBefore(_frame->node, QDomNode()); //QMessageBox::information(0,0,"СЃРѕР·РґР°РЅ СЃРІРѕР±РѕРґРЅС‹Р№ РґРѕР±Р°РІР»РµРЅ РІ РЅР°С‡Р°Р»Рѕ");
                                 }
-                                else //элементы были юю добвляем после последнего
-                                {_anim->node.insertAfter(_frame->node, lastAddedNode); //QMessageBox::information(0,0,"создан свободный добавлен в конец");
+                                else //СЌР»РµРјРµРЅС‚С‹ Р±С‹Р»Рё СЋСЋ РґРѕР±РІР»СЏРµРј РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ
+                                {_anim->node.insertAfter(_frame->node, lastAddedNode); //QMessageBox::information(0,0,"СЃРѕР·РґР°РЅ СЃРІРѕР±РѕРґРЅС‹Р№ РґРѕР±Р°РІР»РµРЅ РІ РєРѕРЅРµС†");
                                 }
 
                              lastAddedNode = _frame->node;
                              //if(lastAddedNode.isNull())QMessageBox::information(0,0, "NULL. Node not created =(");
                             _LASTframe=_frame;
                         }
-                    }//if(_frame->series)//если серия
+                    }//if(_frame->series)//РµСЃР»Рё СЃРµСЂРёСЏ
                     else
                     {
-                     //QMessageBox::information(0,0, QString("фрейм свободен "));
+                     //QMessageBox::information(0,0, QString("С„СЂРµР№Рј СЃРІРѕР±РѕРґРµРЅ "));
                       seriesBegin=false;
                       _frame->series=false;
-                      //создаём новый узел
+                      //СЃРѕР·РґР°С‘Рј РЅРѕРІС‹Р№ СѓР·РµР»
                       if(_frame->newFrame )
                       {
                           _frame->node=document0.createElement("frame");
@@ -1474,22 +1322,22 @@ void animatron::slotSaveDraw()
                                                                 .arg(_frame->tex_x).arg(_frame->tex_y).arg(_frame->tex_w).arg(_frame->tex_h));
                           _frame->node.toElement().setAttribute("texture", _frame->texture);
 
-                          if(lastAddedNode.isNull())//небыло элементов.. добавляем в начало
+                          if(lastAddedNode.isNull())//РЅРµР±С‹Р»Рѕ СЌР»РµРјРµРЅС‚РѕРІ.. РґРѕР±Р°РІР»СЏРµРј РІ РЅР°С‡Р°Р»Рѕ
                           {_anim->node.insertBefore(_frame->node, QDomNode());
-                              //QMessageBox::information(0,0,"lastAddedNode.isNull!! свободный добавлен в начало");
+                              //QMessageBox::information(0,0,"lastAddedNode.isNull!! СЃРІРѕР±РѕРґРЅС‹Р№ РґРѕР±Р°РІР»РµРЅ РІ РЅР°С‡Р°Р»Рѕ");
                           }
-                          else //элементы были .. добвляем после последнего
+                          else //СЌР»РµРјРµРЅС‚С‹ Р±С‹Р»Рё .. РґРѕР±РІР»СЏРµРј РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ
                           {_anim->node.insertAfter(_frame->node, lastAddedNode);
-                              //QMessageBox::information(0,0,"свободный добавлен в конец");
+                              //QMessageBox::information(0,0,"СЃРІРѕР±РѕРґРЅС‹Р№ РґРѕР±Р°РІР»РµРЅ РІ РєРѕРЅРµС†");
                           }
                           lastAddedNode = _frame->node;
 
                       _LASTframe=_frame;
                     }
                 }
-		//QMessageBox::information(0,0,"фреймов больше не осталось");
+		//QMessageBox::information(0,0,"С„СЂРµР№РјРѕРІ Р±РѕР»СЊС€Рµ РЅРµ РѕСЃС‚Р°Р»РѕСЃСЊ");
 
-		//помечаем все фреймы и анимы как НЕ новые так как их только что сохранили
+		//РїРѕРјРµС‡Р°РµРј РІСЃРµ С„СЂРµР№РјС‹ Рё Р°РЅРёРјС‹ РєР°Рє РќР• РЅРѕРІС‹Рµ С‚Р°Рє РєР°Рє РёС… С‚РѕР»СЊРєРѕ С‡С‚Рѕ СЃРѕС…СЂР°РЅРёР»Рё
                 _anim->newAnim=false;
                 QListIterator<frame*> frameIteratorN(_anim->frames);
 		while(frameIteratorN.hasNext())

@@ -68,5 +68,11 @@
         <file>Resources/folders.png</file>
         <file>Resources/information-frame.png</file>
         <file>Resources/pencil.png</file>
+        <file>Resources/flag_russia.png</file>
+        <file>Resources/flag_great_britain.png</file>
+    </qresource>
+    <qresource prefix="/lang">
+        <file>reseditor_eng.qm</file>
+        <file>reseditor_ru.qm</file>
     </qresource>
 </RCC>

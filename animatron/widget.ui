@@ -67,14 +67,14 @@
           <item>
            <widget class="QCheckBox" name="checkBox_use">
             <property name="text">
-             <string>border</string>
+             <string>рамка</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="checkBox_visible">
             <property name="text">
-             <string>visible</string>
+             <string>видим</string>
             </property>
            </widget>
           </item>

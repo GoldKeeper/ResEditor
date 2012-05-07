@@ -16,16 +16,18 @@
 #include <QMap>
 #include <QComboBox>
 #include <QAction>
+#include <QTranslator>
 
 class imgCuter : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	imgCuter(QWidget *parent = 0, Qt::WFlags flags = 0);
+    imgCuter(QWidget *parent = 0, Qt::WFlags flags = 0, QString translateFile = QString());
 	~imgCuter();
 
 	GraphicsScene scene;
+        QTranslator * translator;
 
 private:
 	Ui::imgCuterClass ui;
@@ -35,8 +37,7 @@ public:
 	void createActions();
 
 	QMap<QString,QString> mapTextures;
-	QString directory;
-	//int z;
+	QString directory;	
 
 	QGraphicsItem * lineLeft;
 	QGraphicsItem * lineRight;
@@ -45,14 +46,11 @@ public:
 
 	QPointF oldPos;
 	QPointF curPos;
-	QPointF oldItemPos;
-	//QPointF rPos;
+	QPointF oldItemPos;	
 	float sceneScale;
 
 	QRectF oldRect;
-	QRectF newRect;
-
-	//GraphicsRectItem * movable;	
+	QRectF newRect;	
 
 	GraphicsRectItem * selectedItem;
 	QGraphicsPixmapItem * texture;
@@ -90,13 +88,11 @@ public:
 	QAction * zoomIn;
 	QAction * zoomOne;
 	QAction * zoomOut;
-	
 
 public slots:
 	void loadTexture();
 	void changeTexture();
-	void saveData();
-	//void resizeEvent(QResizeEvent *);
+	void saveData();	
 
 	void mouseMoveSlot(QGraphicsSceneMouseEvent * _e);
 	void mousePressSlot(QGraphicsSceneMouseEvent * _e);
@@ -117,11 +113,11 @@ public slots:
 
 	void setSprite(QString textureName, int x, int y, int w, int h);
 
-	void slotTextureUpdate();;
-	void slotLayerChes();;
-	void slotZoomIn();;
-	void slotZoomOne();;
-	void slotZoomOut();;
+        void slotTextureUpdate();
+        void slotLayerChes();
+        void slotZoomIn();
+        void slotZoomOne();
+        void slotZoomOut();
 
 
 signals:

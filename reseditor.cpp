@@ -1,4 +1,4 @@
-#include "reseditor.h"
+ï»¿#include "reseditor.h"
 #include "ui_reseditor.h"
 
 #include <QToolBar>
@@ -21,15 +21,13 @@ ResEditor::ResEditor(QWidget *parent) :
     xmlFileName="";
     xmlFileWorkDir="";
     loaded=false;
-    edited=false;
     ui->treeWidget->sortByColumn(0, Qt::AscendingOrder);
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     dlgtexture = new DlgTexture(this, Qt::Window);
 
     prepeareActions();
-
-
+    translator = new QTranslator(this);
 }
 
 ResEditor::~ResEditor()
@@ -63,22 +61,22 @@ void ResEditor::prepeareActions()
 
         connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(slotExit()));
 
-        actNormalaize=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/edit-list-order.png"), tr("Óïîðÿäî÷èòü óçëû"));
+        actNormalaize=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/edit-list-order.png"), tr("Ð£Ð¿Ð¾Ñ€ÑÐ´Ð¾Ñ‡Ð¸Ñ‚ÑŒ ÑƒÐ·Ð»Ñ‹"));
         connect(actNormalaize, SIGNAL(triggered()), this, SLOT(slotNormalaize()));
 
         ui->mainToolBar->addSeparator();
 
-        actAddTexture=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/image--plus.png"), tr("Äîáàâèòü òåêñòóðó"));
+        actAddTexture=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/image--plus.png"), tr("Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñƒ"));
         connect(actAddTexture,SIGNAL(triggered()),this,SLOT(slotAddTexture()));
-        actDeletTexture=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/image--minus.png"), tr("Óäàëèòü òåêñòóðó"));
+        actDeletTexture=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/image--minus.png"), tr("Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñƒ"));
         connect(actDeletTexture,SIGNAL(triggered()),this,SLOT(slotDeletTexture()));
-        actAddObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--plus.png"), tr("Äîáàâèòü îáúåêò"));
+        actAddObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--plus.png"), tr("Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚"));
         connect(actAddObject,SIGNAL(triggered()),this,SLOT(slotAddObject()));
-        actEditObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--pencil.png"), tr("Ðåäàêòèðîâàòü îáúåêò"));
+        actEditObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--pencil.png"), tr("Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚"));
         connect(actEditObject,SIGNAL(triggered()),this,SLOT(slotEditObject()));
-        actDeleteObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--minus.png"), tr("Óäàëèòü îáúåêò"));
+        actDeleteObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--minus.png"), tr("Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚"));
         connect(actDeleteObject,SIGNAL(triggered()),this,SLOT(slotDeleteObject()));
-        actCopyObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folders.png"), tr("Êîïèðîâàòü îáúåêò"));
+        actCopyObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folders.png"), tr("ÐšÐ¾Ð¿Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚"));
         connect(actCopyObject,SIGNAL(triggered()),this,SLOT(slotCopyObject()));
 
         ui->actionSave->setEnabled(false);
@@ -98,16 +96,54 @@ void ResEditor::prepeareActions()
         objectMenu->addAction(actCopyObject);
 
         textureMenu = new QMenu(this);
+        textureMenu->addAction(actAddTexture);
+        textureMenu->addAction(actDeletTexture);
+
+        QActionGroup * actionGroup = new QActionGroup(this);
+        QAction * action= NULL;
+
+        action = ui->menuLang->addAction(QPixmap(":/ResEditor/Resources/flag_russia.png"), tr("Ð ÑƒÑÑÐºÐ¸Ð¹"));
+        action->setCheckable(true);
+        action->setChecked(true);
+        actionGroup->addAction(action);
+        tranlateFiles.insert(action, ":/lang/reseditor_ru.qm");
+
+        action = ui->menuLang->addAction(QPixmap(":/ResEditor/Resources/flag_great_britain.png"), tr("English"));
+        action->setCheckable(true);
+        actionGroup->addAction(action);
+        tranlateFiles.insert(action, ":/lang/reseditor_eng.qm");
+
+        connect(actionGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotChangeLang(QAction*)));
+
+        //tranlateFiles
 }
 
-void ResEditor::slotFirstLoad()
+void ResEditor::retranslate()
 {
+    actNormalaize->setText(tr("Ð£Ð¿Ð¾Ñ€ÑÐ´Ð¾Ñ‡Ð¸Ñ‚ÑŒ ÑƒÐ·Ð»Ñ‹"));
+    actAddTexture->setText(tr("Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñƒ"));
+    actDeletTexture->setText(tr("Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñƒ"));
+    actAddObject->setText(tr("Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚"));
+    actEditObject->setText(tr("Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚"));
+    actDeleteObject->setText(tr("Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚"));
+    actCopyObject->setText(tr("ÐšÐ¾Ð¿Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚"));
+
+    setWindowTitleRE(windowTitle().right(1)=="*");
+
+    retranslateTree();
+}
+
+void ResEditor::retranslateTree()
+{
+    if(!loaded) return;
+    ResXmlParser::Instance().objectsItem->setText(0, QString(tr("ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹")+" ("+QString::number(ResXmlParser::Instance().objectsItem->childCount())+")"));
+    ResXmlParser::Instance().texturesItem->setText(0, QString(tr("Ð¢ÐµÐºÑÑ‚ÑƒÑ€Ñ‹")+" ("+QString::number(ResXmlParser::Instance().texturesItem->childCount())+")"));
 }
 
 
 void ResEditor::setWindowTitleRE(const bool &isEdited)
 {
-    setWindowTitle( tr("Ðåäàêòîð ðåñóðñîâ: ") + xmlFileName + (isEdited?"*":""));
+    setWindowTitle( tr("Ð ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€ Ñ€ÐµÑÑƒÑ€ÑÐ¾Ð²: ") + xmlFileName + (isEdited?"*":""));
 }
 
 void ResEditor::slotOpenXml()
@@ -120,7 +156,7 @@ void ResEditor::slotOpenXml()
     QString fileToOpen;
     if (startFile.length()==0)
     {
-        fileToOpen = QFileDialog::getOpenFileName(this, tr("Îòêðûòü XML"), "", tr("XML-ôàéëû")+" (*.xml)");
+        fileToOpen = QFileDialog::getOpenFileName(this, tr("ÐžÑ‚ÐºÑ€Ñ‹Ñ‚ÑŒ XML"), "", tr("XML-Ñ„Ð°Ð¹Ð»Ñ‹")+" (*.xml)");
     }
     else
     {
@@ -130,10 +166,10 @@ void ResEditor::slotOpenXml()
             if (qfi.fileName().endsWith(".xml", Qt::CaseInsensitive))
                 fileToOpen = qfi.absoluteFilePath ();
             else
-                QMessageBox::critical(0,0, tr("Íåâåðíîå ðàñøèðåíèå ôàéëà"));
+                QMessageBox::critical(0,0, tr("ÐÐµÐ²ÐµÑ€Ð½Ð¾Ðµ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ðµ Ñ„Ð°Ð¹Ð»Ð°"));
         }
         else
-          QMessageBox::critical(0,0, tr("Ôàéë íå íàéäåí"));
+          QMessageBox::critical(0,0, tr("Ð¤Ð°Ð¹Ð» Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½"));
         startFile=QString();
     }
 
@@ -151,6 +187,8 @@ void ResEditor::slotOpenXml()
         if(ResXmlParser::Instance().peraseXml(fileToOpen, ui->treeWidget, &treeNodes))
         {
             loaded=true;
+            retranslateTree();
+
 
             QFileInfo qfi(fileToOpen);
             QString TMPxmlFileName=qfi.fileName();
@@ -219,8 +257,8 @@ void ResEditor::enablingActions()
                 actDeleteObject->setEnabled(true);
                 actCopyObject->setEnabled(true);
                 break;
-        case ResXmlParser::SPRITE: break; //óæå íå ïîíàäîáèòñÿ ïîòîì óáðàòü
-        case ResXmlParser::TILE: break; //óæå íå ïîíàäîáèòñÿ ïîòîì óáðàòü
+        //case ResXmlParser::SPRITE: break; //ÑƒÐ¶Ðµ Ð½Ðµ Ð¿Ð¾Ð½Ð°Ð´Ð¾Ð±Ð¸Ñ‚ÑÑ Ð¿Ð¾Ñ‚Ð¾Ð¼ ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ
+        //case ResXmlParser::TILE: break; //ÑƒÐ¶Ðµ Ð½Ðµ Ð¿Ð¾Ð½Ð°Ð´Ð¾Ð±Ð¸Ñ‚ÑÑ Ð¿Ð¾Ñ‚Ð¾Ð¼ ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ
         case ResXmlParser::OTHER: break;
         }
         actAddTexture->setEnabled(true);
@@ -231,14 +269,14 @@ void ResEditor::slotAddTexture()
 {
         bool bOK;
         QString newName= QInputDialog::getText(this,
-                                               tr( "Íàçâàíèå òåêñòóðû"),
-                                               tr("Íàçâàíèå:"),
+                                               tr( "ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹"),
+                                               tr("ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ:"),
                                                 QLineEdit::Normal,
-                                               tr("new_texture"),
+                                               "new_texture",
                                                 &bOK);
         if (bOK)
         {
-            QString fileToOpen = QFileDialog::getOpenFileName(this, tr("Ôàéë òåêñòóðû"), "", tr("PNG-ôàéëû")+" (*.png)");
+            QString fileToOpen = QFileDialog::getOpenFileName(this, tr("Ð¤Ð°Ð¹Ð» Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹"), "", tr("PNG-Ñ„Ð°Ð¹Ð»Ñ‹")+" (*.png)");
 
                 if(fileToOpen!="")
                 {
@@ -250,7 +288,7 @@ void ResEditor::slotAddTexture()
                                 newNode.toElement().setAttribute("srcfile", qstrl[1]);
                                 ResXmlParser::Instance().document.documentElement().appendChild(newNode);
                                 QTreeWidgetItem * newTextureItem =ResXmlParser::Instance().addTexture(ResXmlParser::Instance().texturesItem, newNode);
-                                ResXmlParser::Instance().texturesItem->setText(0,tr("Òåêñòóðû")+" ("+QString::number(ResXmlParser::Instance().document.documentElement().elementsByTagName("texture").count())+")");
+                                ResXmlParser::Instance().texturesItem->setText(0,tr("Ð¢ÐµÐºÑÑ‚ÑƒÑ€Ñ‹")+" ("+QString::number(ResXmlParser::Instance().document.documentElement().elementsByTagName("texture").count())+")");
                                 ui->treeWidget->setCurrentItem(newTextureItem);
                                 isEdited=true;
                                 setWindowTitleRE(true);
@@ -262,7 +300,7 @@ void ResEditor::slotAddTexture()
 void ResEditor::slotDeletTexture()
 {
         ResXmlParser::Instance().document.documentElement().removeChild(treeNodes.value(ui->treeWidget->currentItem()));
-        ResXmlParser::Instance().texturesItem->setText(0,tr("Òåêñòóðû")+" ("+QString::number(ResXmlParser::Instance().document.documentElement().elementsByTagName("texture").count())+")");
+        ResXmlParser::Instance().texturesItem->setText(0,tr("Ð¢ÐµÐºÑÑ‚ÑƒÑ€Ñ‹")+" ("+QString::number(ResXmlParser::Instance().document.documentElement().elementsByTagName("texture").count())+")");
         treeNodes.remove(ui->treeWidget->currentItem());
         delete ui->treeWidget->currentItem();
 
@@ -274,10 +312,10 @@ void ResEditor::slotAddObject()
 {
     bool bOK;
     QString newName= QInputDialog::getText(this,
-                                           tr( "Íàçâàíèå îáúåêòà"),
-                                           tr("Íàçâàíèå:"),
+                                           tr( "ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°"),
+                                           tr("ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ:"),
                                             QLineEdit::Normal,
-                                           tr("new_draw"),
+                                           "new_draw",
                                             &bOK);
     if(bOK)
     {
@@ -287,7 +325,7 @@ void ResEditor::slotAddObject()
         newNode.toElement().setAttribute("offset", "0,0");
         ResXmlParser::Instance().document.documentElement().appendChild(newNode);
         QTreeWidgetItem* newObject= ResXmlParser::Instance().addObject( ResXmlParser::Instance().objectsItem, newNode);
-        ResXmlParser::Instance().objectsItem->setText(0,tr("Îáúåêòû")+" ("+QString::number( ResXmlParser::Instance().document.documentElement().elementsByTagName("draw").count())+")");
+        ResXmlParser::Instance().objectsItem->setText(0,tr("ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹")+" ("+QString::number( ResXmlParser::Instance().document.documentElement().elementsByTagName("draw").count())+")");
         ui->treeWidget->setCurrentItem(newObject);
         isEdited=true;
         setWindowTitleRE(true);
@@ -300,7 +338,15 @@ void ResEditor::slotEditObject()
     if(twi->type()==ResXmlParser::OBJECT)
     {
         {
-                    animatronObj = new animatron(this);
+            QString translFile="";
+                    QHashIterator<QAction*, QString> iter(tranlateFiles);
+                    while(iter.hasNext())
+                    {
+                        iter.next();
+                        if(iter.key()->isChecked())
+                            translFile = iter.value();
+                    }                    
+                    animatronObj = new animatron(this, Qt::Dialog, translFile);
                     animatronObj->setWindowModality(Qt::WindowModal);
                     connect(animatronObj, SIGNAL(objectSaved()), this, SLOT(objectSaved()));
                     animatronObj->allTextures.unite(ResXmlParser::Instance().allTextures);
@@ -318,7 +364,7 @@ void ResEditor::slotEditObject()
 void ResEditor::slotDeleteObject()
 {
     ResXmlParser::Instance().document.documentElement().removeChild(treeNodes.value(ui->treeWidget->currentItem()));
-    ResXmlParser::Instance().objectsItem->setText(0,"Îáúåêòû ("+QString::number(ResXmlParser::Instance().document.documentElement().elementsByTagName("draw").count())+")");
+    ResXmlParser::Instance().objectsItem->setText(0,"ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹ ("+QString::number(ResXmlParser::Instance().document.documentElement().elementsByTagName("draw").count())+")");
     treeNodes.remove(ui->treeWidget->currentItem());
     delete ui->treeWidget->currentItem();
 
@@ -402,11 +448,13 @@ void ResEditor::objectSaved()
 
 void ResEditor::slotAbout()
 {
+    QString ver= "v 1.3";
     QString text="";
-            text+="Resourse editor v 1.2 \nfor project ORIGIN-WORLD\n";
-            text+="http://origin-world.com\n\n";
-            text+="made by GoldKeeper\n";
-            text+="Email: prod3500@gmail.com";
+    text+= tr("Ð ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€ Ñ€ÐµÑÑƒÑ€ÑÐ¾Ð²") + ver + "\n" + tr("Ð´Ð»Ñ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð°")+ " ORIGIN-WORLD\n";
+    text+="http://origin-world.com\n\n";
+    text+="made by GoldKeeper\n";
+    text+="Email: prod3500@gmail.com\n";
+    text+="GitHub repository: https://github.com/GoldKeeper/ResEditor";
 
     QMessageBox::information(this, "About", text);
 }
@@ -415,17 +463,24 @@ void ResEditor::slotUpdateHistory()
 {
     QString v1_1="";
     v1_1+="ver. 1.1:\n";
-    v1_1+="1)äîáàâëåíî êîíòåêñòíîå ìåíþ;\n";
-    v1_1+="2)äîáàâëåíà âîçìîæíîñòü êîïèðîâàíèÿ îáúåêòîâ;\n";
-    v1_1+="3)êîððåêòíîå îòîáðàæåíèå ìèíèàòþðû ñïðàéòà(ôðåéìà);\n";
-    v1_1+="4)èñïðàâëåíî ñîõðàíåíèå ñ ó÷¸òîì íîâîé ñòðóêòóðû àíèìàöèè;\n";
+    v1_1+="1)Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¾ ÐºÐ¾Ð½Ñ‚ÐµÐºÑÑ‚Ð½Ð¾Ðµ Ð¼ÐµÐ½ÑŽ;\n";
+    v1_1+="2)Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð° Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾ÑÑ‚ÑŒ ÐºÐ¾Ð¿Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²;\n";
+    v1_1+="3)ÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ð¾Ðµ Ð¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ð¼Ð¸Ð½Ð¸Ð°Ñ‚ÑŽÑ€Ñ‹ ÑÐ¿Ñ€Ð°Ð¹Ñ‚Ð°(Ñ„Ñ€ÐµÐ¹Ð¼Ð°);\n";
+    v1_1+="4)Ð¸ÑÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ðµ Ñ ÑƒÑ‡Ñ‘Ñ‚Ð¾Ð¼ Ð½Ð¾Ð²Ð¾Ð¹ ÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ñ‹ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸;\n";
     
     v1_1+="ver. 1.2:\n";
-	v1_1+="Çàïóñê èç êîíñîëè ñ ïàðàìåòðîì - èìÿ ôàéëà\n";
-	v1_1+="Âîçìîæíîòñü îòêðûòèÿ äðóãîãî ôàéëà íå çàêðûâàÿ ïðîãðàììó\n";
-	v1_1+="Ïðåäóïðåæäåíèå î íåñîõðàí¸ííîñòè (ïîêà òîëüêî â ãëàâíîì îêíå)\n";
+        v1_1+="1)Ð·Ð°Ð¿ÑƒÑÐº Ð¸Ð· ÐºÐ¾Ð½ÑÐ¾Ð»Ð¸ Ñ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð¼ - Ð¸Ð¼Ñ Ñ„Ð°Ð¹Ð»Ð°\n";
+        v1_1+="2)Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾Ñ‚ÑÑŒ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ñ Ð´Ñ€ÑƒÐ³Ð¾Ð³Ð¾ Ñ„Ð°Ð¹Ð»Ð° Ð½Ðµ Ð·Ð°ÐºÑ€Ñ‹Ð²Ð°Ñ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñƒ\n";
+        v1_1+="3)Ð¿Ñ€ÐµÐ´ÑƒÐ¿Ñ€ÐµÐ¶Ð´ÐµÐ½Ð¸Ðµ Ð¾ Ð½ÐµÑÐ¾Ñ…Ñ€Ð°Ð½Ñ‘Ð½Ð½Ð¾ÑÑ‚Ð¸ (Ð¿Ð¾ÐºÐ° Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð² Ð³Ð»Ð°Ð²Ð½Ð¾Ð¼ Ð¾ÐºÐ½Ðµ)\n";
+        v1_1+="4)Ð¿ÐµÑ€ÐµÑ€Ð°Ð±Ð¾Ñ‚Ð°Ð½ Ð¿Ð°Ñ€ÑÐµÑ€ XML, Ð¸ Ñ‚ÐµÐ¿ÐµÑ€ÑŒ Ð¿Ð¾ÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÑ‚ Ð½Ðµ Ð²Ð°Ð»Ð¸Ð´Ð½Ð¾Ðµ Ð¼ÐµÑÑ‚Ð¾\n";
 
-	QMessageBox::information(this, "Update history", v1_1);
+    v1_1+="ver. 1.3:\n";
+        v1_1+="1)Ð˜Ð·Ð¼ÐµÐ½ÐµÐ½Ð° ÐºÐ¾Ð´Ð¸Ñ€Ð¾Ð²ÐºÐ° Ñ CP-1251 Ð½Ð° UTF-8(Ñ‚ÐµÐ¿ÐµÑ€ÑŒ Ð²ÐµÐ·Ð´Ðµ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð²Ð¸Ð´ÐµÐ½ Ñ‚ÐµÐºÑÑ‚)\n";
+        v1_1+="2)ÐŸÑ€Ð¾Ð²ÐµÐ´ÐµÐ½Ð° Ð¸Ð½Ñ‚ÐµÑ€Ð½Ð°Ñ†Ð¸Ð¾Ð½Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ\n";
+        v1_1+="3)Ð”Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¾ ÐºÐ¾Ð½Ñ‚ÐµÐºÑÑ‚Ð½Ð¾Ðµ Ð¼ÐµÐ½ÑŽ Ð´Ð»Ñ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€\n";
+        v1_1+="4)ÐŸÐ¾Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð½Ð¾Ð²Ð¾Ð³Ð¾ Ñ„Ñ€ÐµÐ¹Ð¼Ð° Ð² Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÑŽ\n";
+
+    QMessageBox::information(this, tr("Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ð¹"), v1_1);
 }
 
 void ResEditor::slotContextMenu(const QPoint & qp)
@@ -436,7 +491,7 @@ void ResEditor::slotContextMenu(const QPoint & qp)
         switch(ui->treeWidget->currentItem()->type())
         {
         case ResXmlParser::TEXTURE:
-                //textureMenu->popup(QCursor::pos()); //äîïèñàòü ìåíþ äëÿ òåêñòóðû
+                textureMenu->popup(QCursor::pos()); //Ð´Ð¾Ð¿Ð¸ÑÐ°Ñ‚ÑŒ Ð¼ÐµÐ½ÑŽ Ð´Ð»Ñ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹
                 break;
         case ResXmlParser::OBJECT:
                 objectMenu->popup(QCursor::pos());
@@ -451,7 +506,7 @@ void ResEditor::slotCopyObject()
     QDomNode newNode= treeNodes.value(ui->treeWidget->currentItem()).cloneNode(true);
     ResXmlParser::Instance().document.documentElement().appendChild(newNode);
     QTreeWidgetItem* newObject= ResXmlParser::Instance().addObject(ResXmlParser::Instance().objectsItem, newNode);
-    ResXmlParser::Instance().objectsItem->setText(0,tr("Îáúåêòû")+" ("+QString::number(ResXmlParser::Instance().document.documentElement().elementsByTagName("draw").count())+")");
+    ResXmlParser::Instance().objectsItem->setText(0,tr("ÐžÐ±ÑŠÐµÐºÑ‚Ñ‹")+" ("+QString::number(ResXmlParser::Instance().document.documentElement().elementsByTagName("draw").count())+")");
     ui->treeWidget->setCurrentItem(newObject);
 
     isEdited=true;
@@ -478,11 +533,11 @@ void ResEditor::slotExit()
 bool ResEditor::tryExitNotSaved()
 {
     int n = QMessageBox::warning(0,
-                          tr("Âíèìàíèå"),
-                          tr("Âíåñåíû èçìåíåíèÿ."),
-                          tr("Ñîõðàíèòü"),
-                          tr("Íå ñîõðàíÿòü"),
-                          tr("Îòìåíà"),
+                          tr("Ð’Ð½Ð¸Ð¼Ð°Ð½Ð¸Ðµ"),
+                          tr("Ð’Ð½ÐµÑÐµÐ½Ñ‹ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ."),
+                          tr("Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ"),
+                          tr("ÐÐµ ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÑ‚ÑŒ"),
+                          tr("ÐžÑ‚Ð¼ÐµÐ½Ð°"),
                           0,
                           1
                           );
@@ -496,4 +551,22 @@ bool ResEditor::tryExitNotSaved()
 
     return false;
 }
+
+void ResEditor::slotChangeLang(QAction * act)
+{
+    translator->load(tranlateFiles.value(act));
+    qApp->installTranslator(translator);
+    ui->retranslateUi(this);
+}
+
+void ResEditor::changeEvent(QEvent *event)
+{
+    if(event->type ()==QEvent::LanguageChange)
+    {
+        retranslate ();
+    }
+    QMainWindow::changeEvent (event);
+}
+
+
 

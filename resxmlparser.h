@@ -1,4 +1,4 @@
-#ifndef RESXMLPARSER_H
+п»ї#ifndef RESXMLPARSER_H
 #define RESXMLPARSER_H
 
 #include <QMap>
@@ -8,40 +8,44 @@
 #include <QFile>
 #include <QHash>
 #include <QMap>
+//#include <QTranslator>
+#include <QObject>
 
-class ResXmlParser
+class ResXmlParser: public QObject
 {
+   // Q_OBJECT
+
 private:
-
-
-    ResXmlParser(){}
+    ResXmlParser(): QObject(0){}
     ResXmlParser(ResXmlParser& root);
     ResXmlParser& operator=(ResXmlParser&);
 
 public:
 
+    //static QTranslator translator;
+    //void setTranslator
     enum itemType{TEXTURE = 1001, OBJECT, SPRITE, TILE, OTHER };
 
     static ResXmlParser & Instance()
     {
-            static ResXmlParser theSingleInstance;
+            static ResXmlParser theSingleInstance;            
             return theSingleInstance;
     }
 
-    QDomDocument document; //Объект документа //к.о.
+    QDomDocument document; //РћР±СЉРµРєС‚ РґРѕРєСѓРјРµРЅС‚Р° //Рє.Рѕ.
     QDomNode rootNode;
 
-    QTreeWidgetItem * rootItem; //корневой элемент // вероятно общий корневой элемент
-    QTreeWidgetItem * texturesItem;//элемент корневой для текстур
-    QTreeWidgetItem * objectsItem;//элемент корневой для объектов
-    QHash<QTreeWidgetItem*, QDomNode> * treeNodes;//указатель на связку узла и итема дерева в рес эдиторе
-    QMap<QString, QString>allTextures;
+    QTreeWidgetItem * rootItem; //РєРѕСЂРЅРµРІРѕР№ СЌР»РµРјРµРЅС‚ // РІРµСЂРѕСЏС‚РЅРѕ РѕР±С‰РёР№ РєРѕСЂРЅРµРІРѕР№ СЌР»РµРјРµРЅС‚
+    QTreeWidgetItem * texturesItem;//root for Textures//СЌР»РµРјРµРЅС‚ РєРѕСЂРЅРµРІРѕР№ РґР»СЏ С‚РµРєСЃС‚СѓСЂ
+    QTreeWidgetItem * objectsItem;//root for Objects//СЌР»РµРјРµРЅС‚ РєРѕСЂРЅРµРІРѕР№ РґР»СЏ РѕР±СЉРµРєС‚РѕРІ
+    QHash<QTreeWidgetItem*, QDomNode> * treeNodes;//pointer to map ResEditor::treeNodes//СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃРІСЏР·РєСѓ СѓР·Р»Р° Рё РёС‚РµРјР° РґРµСЂРµРІР° РІ СЂРµСЃ СЌРґРёС‚РѕСЂРµ
+    QMap<QString, QString>allTextures;//map of all textures//РјР°РїР° РґР»СЏ РІСЃРµС… С‚РµРєСЃС‚СѓСЂ - СЃРІСЏР·РєР° РЅР°Р·РІР°РЅРёРµ - РёРјСЏ С„Р°Р№Р»Р°
 
-    bool peraseXml (const QString &file, QTreeWidget * pqTreeWidgetee, QHash<QTreeWidgetItem*, QDomNode> * _treeNodes); //стартовая точка для парсинга
+    bool peraseXml (const QString &file, QTreeWidget * pqTreeWidgetee, QHash<QTreeWidgetItem*, QDomNode> * _treeNodes);//setup and begin parse //СЃС‚Р°СЂС‚РѕРІР°СЏ С‚РѕС‡РєР° РґР»СЏ РїР°СЂСЃРёРЅРіР°
 
-    void addAllres(); //запуск парсинга
-    QTreeWidgetItem * addTexture(QTreeWidgetItem * _parentItem, QDomNode node);//добавление текстуры
-    QTreeWidgetItem * addObject(QTreeWidgetItem * _parentItem, QDomNode node);//добавление объекта
+    void addAllres(); //Р·Р°РїСѓСЃРє РїР°СЂСЃРёРЅРіР°
+    QTreeWidgetItem * addTexture(QTreeWidgetItem * _parentItem, QDomNode node);//РґРѕР±Р°РІР»РµРЅРёРµ С‚РµРєСЃС‚СѓСЂС‹
+    QTreeWidgetItem * addObject(QTreeWidgetItem * _parentItem, QDomNode node);//РґРѕР±Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р°
 };
 
 #endif // RESXMLPARSER_H

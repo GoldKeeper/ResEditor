@@ -24,6 +24,7 @@
 
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QTranslator>
 
 
 class animatron : public QMainWindow
@@ -31,10 +32,11 @@ class animatron : public QMainWindow
 	Q_OBJECT
 
 public:
-	animatron(QWidget *parent = 0, Qt::WFlags flags = 0);
+        animatron(QWidget *parent = 0, Qt::WFlags flags = 0, QString translateFile = QString());
 	~animatron();
 
 	imgCuter *imgCtr;
+        QTranslator * translator;
 
 	void setupUiImg();
 	void connectUi();

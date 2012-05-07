@@ -11,30 +11,33 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ResEditor</string>
+   <string>Редактор ресурсов</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QTreeWidget" name="treeWidget">
+      <property name="headerHidden">
+       <bool>false</bool>
+      </property>
       <column>
        <property name="text">
-        <string>Name</string>
+        <string notr="true">-</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>Content</string>
+        <string notr="true">-</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>Type</string>
+        <string notr="true">-</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>Id</string>
+        <string notr="true">-</string>
        </property>
       </column>
      </widget>
@@ -66,8 +69,14 @@
     <addaction name="actionAbout"/>
     <addaction name="actionUpdate_history"/>
    </widget>
+   <widget class="QMenu" name="menuLang">
+    <property name="title">
+     <string>Язык</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuInfo"/>
+   <addaction name="menuLang"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

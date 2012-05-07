@@ -22,7 +22,7 @@ SOURCES += main.cpp\
 
 HEADERS  += reseditor.h \
     #xmlparser.h \
-    treewidgetitem.h \
+    #treewidgetitem.h \
     dlgtexture.h \
     imgcuter/imgcuter.h \
     imgcuter/graphicsview.h \
@@ -42,6 +42,11 @@ FORMS    += reseditor.ui \
     imgcuter/imgcuter.ui \
     animatron/widget.ui \
     animatron/animatron.ui
+
+TRANSLATIONS += reseditor_ru.ts reseditor_eng.ts
+
+CODECFORTR = UTF-8
+CODECFORSRC = UTF-8
 
 RESOURCES += \
     reseditor.qrc

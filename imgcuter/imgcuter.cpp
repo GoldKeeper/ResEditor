@@ -11,9 +11,16 @@
 #include <QWheelEvent>
 
 
-imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags)
+imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags, QString translateFile)
 	: QMainWindow(parent, flags)
 {
+    translator = new QTranslator(this);
+    if (!translateFile.isEmpty())
+    {
+        translator->load(translateFile);
+    }
+    qApp->installTranslator(translator);
+
 	ui.setupUi(this);        
         graphicsView = new GraphicsView(ui.centralWidget);
 	graphicsView->setObjectName(QString::fromUtf8("graphicsView"));
@@ -71,12 +78,13 @@ imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags)
 
 	ui.spb_Z->setVisible(false);
 	ui.label_5->setVisible(false);
-	
+
+       // ui.retranslateUi(this);
 }
 
 imgCuter::~imgCuter()
 {
-
+    qApp->removeTranslator(translator);
 }
 
 void imgCuter::updateTextureMap()
@@ -170,23 +178,23 @@ void imgCuter::setVisibleHolders( bool b )
 
 void imgCuter::createActions()
 {
-	saveAction = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/disk.png") ,"Ñîõðàíèòü");
+    saveAction = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/disk.png") ,tr("Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ"));
 connect(saveAction,SIGNAL(triggered()), this, SLOT(saveData()));
-	textureUpdate = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/arrow-circle-double.png"),"îáíîâèòü òåêñòóðó");
+textureUpdate = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/arrow-circle-double.png"),tr("ÐžÐ±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñƒ"));
 connect(textureUpdate,SIGNAL(triggered()),this,SLOT(slotTextureUpdate()));
-	layerChes = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/layer-transparent.png"),"Øàõìàòíûé ôîí");
+layerChes = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/layer-transparent.png"),tr("Ð¨Ð°Ñ…Ð¼Ð°Ñ‚Ð½Ñ‹Ð¹ Ñ„Ð¾Ð½"));
 connect(layerChes,SIGNAL(triggered()),this,SLOT(slotLayerChes()));
 	layerChes->setCheckable(true); 
 	layerChes->setChecked(true);
-	zoomIn = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/magnifier-zoom-in.png"),"Óâåëè÷èòü");
+        zoomIn = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/magnifier-zoom-in.png"),tr("Ð£Ð²ÐµÐ»Ð¸Ñ‡Ð¸Ñ‚ÑŒ"));
 connect(zoomIn,SIGNAL(triggered()),this,SLOT(slotZoomIn()));
-	zoomOne = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/magnifier-zoom-actual.png"),"Ìàñøòàá 1:1");
+zoomOne = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/magnifier-zoom-actual.png"),tr("ÐœÐ°ÑÑˆÑ‚Ð°Ð± 1:1"));
 connect(zoomOne,SIGNAL(triggered()),this,SLOT(slotZoomOne()));
-	zoomOut = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/magnifier-zoom-out.png"),"Óìåíüøèòü");
+zoomOut = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/magnifier-zoom-out.png"),tr("Ð£Ð¼ÐµÐ½ÑŒÑˆÐ¸Ñ‚ÑŒ"));
 connect(zoomOut,SIGNAL(triggered()),this,SLOT(slotZoomOut()));
-
-
 }
+
+
 
 void imgCuter::loadTexture()
 {
@@ -609,8 +617,9 @@ void imgCuter::slotZoomOut()
 	{
 		sceneScale--;
 		graphicsView->scale(0.5,0.5);
-	}
+        }
 }
+
 
 
 

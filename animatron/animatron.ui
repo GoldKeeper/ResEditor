@@ -38,6 +38,9 @@
      <height>200</height>
     </size>
    </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Отображаемые элементы</string>
    </property>
@@ -70,6 +73,9 @@
      <width>281</width>
      <height>281</height>
     </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
     <string>Части элемента</string>
@@ -109,6 +115,9 @@
      <height>99</height>
     </size>
    </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Показатели объекта</string>
    </property>
@@ -126,7 +135,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>name: </string>
+        <string>Название: </string>
        </property>
       </widget>
      </item>
@@ -443,14 +452,14 @@
          <item>
           <widget class="QCheckBox" name="checkBox_cross">
            <property name="text">
-            <string>cross</string>
+            <string>крест</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="checkBox_border">
            <property name="text">
-            <string>border</string>
+            <string>рамка</string>
            </property>
           </widget>
          </item>

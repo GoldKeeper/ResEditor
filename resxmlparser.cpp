@@ -1,15 +1,15 @@
-#include "resxmlparser.h"
+п»ї#include "resxmlparser.h"
 #include <QMessageBox>
 
 bool ResXmlParser::peraseXml(const QString &file, QTreeWidget *pqTreeWidgetee, QHash<QTreeWidgetItem*, QDomNode> * _treeNodes)
 {
     treeNodes=_treeNodes;
-    //чтение файла и попытка его пропихнуть в документ
+    //С‡С‚РµРЅРёРµ С„Р°Р№Р»Р° Рё РїРѕРїС‹С‚РєР° РµРіРѕ РїСЂРѕРїРёС…РЅСѓС‚СЊ РІ РґРѕРєСѓРјРµРЅС‚
     QFile qf(file);
     if (!qf.open(QIODevice::ReadOnly | QIODevice::Text))
             {
                     QString MSGcaption= "READ ERROR";
-                    QString MSGcontent = QString("Ошибка открытия файла\n%1").arg(file);
+                    QString MSGcontent = QString(tr("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°\n%1")).arg(file);
                     QMessageBox::critical(0, MSGcaption, MSGcontent);
                     return false;
             }
@@ -18,7 +18,7 @@ bool ResXmlParser::peraseXml(const QString &file, QTreeWidget *pqTreeWidgetee, Q
     if (!document.setContent(qf.readAll(), &domErr, &domLineErr, &domColErr))
             {
                     QString MSGcaption="SET ERROR";
-                    QString MSGcontent =QString("Ошибка установки содержимого файла\n%1\nв DOM document.\n Строка %2 столбец %3.\nТекст ошибки:\n%4")
+                    QString MSGcontent =QString(tr("РћС€РёР±РєР° СѓСЃС‚Р°РЅРѕРІРєРё СЃРѕРґРµСЂР¶РёРјРѕРіРѕ С„Р°Р№Р»Р°\n%1\nРІ DOM document.\n РЎС‚СЂРѕРєР° %2 СЃС‚РѕР»Р±РµС† %3.\nРўРµРєСЃС‚ РѕС€РёР±РєРё:\n%4"))
                             .arg(file)
                             .arg(domLineErr)
                             .arg(domColErr)
@@ -28,7 +28,7 @@ bool ResXmlParser::peraseXml(const QString &file, QTreeWidget *pqTreeWidgetee, Q
             }
 
 
-    //создаём корневой элемент и запускаем парсинг
+    //СЃРѕР·РґР°С‘Рј РєРѕСЂРЅРµРІРѕР№ СЌР»РµРјРµРЅС‚ Рё Р·Р°РїСѓСЃРєР°РµРј РїР°СЂСЃРёРЅРі
     rootNode = document.documentElement();
     rootItem = new QTreeWidgetItem(pqTreeWidgetee, QStringList("root"), ResXmlParser::OTHER);
     rootItem->setIcon(0, QPixmap(":/ResEditor/Resources/document-code.png"));
@@ -42,8 +42,8 @@ bool ResXmlParser::peraseXml(const QString &file, QTreeWidget *pqTreeWidgetee, Q
 
 void ResXmlParser::addAllres()
 {
-    //добавление текстур <texture>
-    texturesItem = new QTreeWidgetItem(rootItem, QStringList("Текстуры ("+QString::number(rootNode.toElement().elementsByTagName("texture").count())+")"), ResXmlParser::OTHER);
+    //РґРѕР±Р°РІР»РµРЅРёРµ С‚РµРєСЃС‚СѓСЂ <texture>
+    texturesItem = new QTreeWidgetItem(rootItem, QStringList(tr("РўРµРєСЃС‚СѓСЂС‹")+" ("+QString::number(rootNode.toElement().elementsByTagName("texture").count())+")"), ResXmlParser::OTHER);
     texturesItem->setIcon(0,QPixmap(":/ResEditor/Resources/images-stack.png"));
     QDomNodeList texturesNodeList = rootNode.toElement().elementsByTagName("texture");
     for (int tnli=0; tnli<texturesNodeList.count(); tnli++)
@@ -51,8 +51,8 @@ void ResXmlParser::addAllres()
             addTexture(texturesItem, texturesNodeList.at(tnli));
     }
 
-    //добавление объектов <draw>
-    objectsItem = new QTreeWidgetItem(rootItem, QStringList("Объекты ("+QString::number(rootNode.toElement().elementsByTagName("draw").count())+")"),ResXmlParser::OTHER);
+    //РґРѕР±Р°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚РѕРІ <draw>
+    objectsItem = new QTreeWidgetItem(rootItem, QStringList(tr("РћР±СЉРµРєС‚С‹")+" ("+QString::number(rootNode.toElement().elementsByTagName("draw").count())+")"),ResXmlParser::OTHER);
     objectsItem->setIcon(0,QPixmap(":/ResEditor/Resources/folder-open-image.png"));
     QDomNodeList objectsNodeList = rootNode.toElement().elementsByTagName("draw");
     for (int onli=0; onli<objectsNodeList.count(); onli++)
