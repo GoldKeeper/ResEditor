@@ -1,4 +1,4 @@
-#include "animatron.h"
+﻿#include "animatron.h"
 #include <QLayout>
 #include <QGridLayout> 
 #include <QLabel>
@@ -88,11 +88,11 @@ void animatron::fillTree()
  			ps->widget->ui.spinBox_y->setValue(ps->offset_y);
  			ps->widget->ui.spinBox_z->setValue(ps->z);
 			ps->drawItem= drawObject;
- 			ps->graphicsItem=createGraphicsItem(ps->texture, ps->tex_x, ps->tex_y, ps->tex_w, ps->tex_h, ps->widget->ui.label);
+                        ps->graphicsItem=createGraphicsItem(ps->texture, ps->tex_x, ps->tex_y, ps->tex_w, ps->tex_h, ps->widget->ui.label);
   			ps->graphicsItem->setZValue(ps->z);
 			ps->graphicsItem->setPos(drawObject->drawRect->rect().x()+ps->offset_x, drawObject->drawRect->rect().y()+ps->offset_y);
- 			ps->spriteRect=scene.addRect(drawObject->drawRect->rect().x()+ps->offset_x, drawObject->drawRect->rect().y()+ps->offset_y, ps->tex_w, ps->tex_h);
-			ps->spriteRect->setZValue(ps->z);	
+                        ps->grRectItem=scene.addRect(drawObject->drawRect->rect().x()+ps->offset_x, drawObject->drawRect->rect().y()+ps->offset_y, ps->tex_w, ps->tex_h);
+                        ps->grRectItem->setZValue(ps->z);
  				
  			ps->widget->ui.checkBox_use->setChecked(true); ps->used=true;
  			ps->widget->ui.checkBox_visible->setChecked(true); ps->visible=true;
@@ -198,11 +198,11 @@ void animatron::fillTree()
 			frm->widget->ui.checkBox_use->setChecked(true); frm->used=true;
 			frm->widget->ui.checkBox_visible->setChecked(true); frm->visible=true;
 			frm->drawItem= drawObject;
- 			frm->graphicsItem=createGraphicsItem(frm->texture, frm->tex_x, frm->tex_y, frm->tex_w, frm->tex_h, frm->widget->ui.label);
+                        frm->graphicsItem=createGraphicsItem(frm->texture, frm->tex_x, frm->tex_y, frm->tex_w, frm->tex_h, frm->widget->ui.label);
  			frm->graphicsItem->setPos(drawObject->drawRect->rect().x()+pa->offset_x, drawObject->drawRect->rect().y()+pa->offset_y);
- 			frm->frmRect=scene.addRect(drawObject->drawRect->rect().x()+pa->offset_x, drawObject->drawRect->rect().y()+pa->offset_y, frm->tex_w, frm->tex_h);
+                        frm->grRectItem=scene.addRect(drawObject->drawRect->rect().x()+pa->offset_x, drawObject->drawRect->rect().y()+pa->offset_y, frm->tex_w, frm->tex_h);
 			frm->graphicsItem->setZValue(pa->z);
-			frm->frmRect->setZValue(pa->z);
+                        frm->grRectItem->setZValue(pa->z);
 
 			connect(frm->widget->ui.checkBox_visible, SIGNAL(toggled ( bool)), frm, SLOT(setVisiblity(bool)));
 			connect(frm->widget->ui.checkBox_use, SIGNAL(toggled ( bool)), frm, SLOT(setUsibility(bool)));
@@ -216,10 +216,6 @@ void animatron::fillTree()
 		QSpacerItem * verticalSpacerF = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 		gridLayoutF->addItem(verticalSpacerF, i, 0, 1, 1);
 	}
-}
-
-void animatron::setSettings()
-{
 }
 
 
@@ -286,11 +282,11 @@ void animatron::setSettings( QDomNode _node )
 		{
 			animated = new anim();
 			animated->newAnim=false;
-			QDomNode node=qdndAnim.at(dnl);
-                        animated->node=node;
-			animated->z=node.toElement().attribute("z").toInt();
-			animated->time=node.toElement().attribute("time").toInt();
-			QStringList qstrlA=node.toElement().attribute("offset").split(",") ;			
+                        QDomNode nodeT=qdndAnim.at(dnl);
+                        animated->node=nodeT;
+                        animated->z=nodeT.toElement().attribute("z").toInt();
+                        animated->time=nodeT.toElement().attribute("time").toInt();
+                        QStringList qstrlA=nodeT.toElement().attribute("offset").split(",") ;
 			if(qstrlA.count()==2)
 				{
 					animated->offset_x=qstrlA[0].toInt();
@@ -300,7 +296,7 @@ void animatron::setSettings( QDomNode _node )
 
 
 
-                                QDomNodeList qdndFrameList= node.childNodes ();
+                                QDomNodeList qdndFrameList= nodeT.childNodes ();
                                 for(int chlds =0; chlds<qdndFrameList.count(); chlds++)
                                 {
                                     QDomNode fnode = qdndFrameList.at(chlds);
@@ -382,26 +378,24 @@ void animatron::setSettings( QDomNode _node )
 
 QGraphicsPixmapItem * animatron::createGraphicsItem( QString _texture, int x, int y, int w, int h, QLabel * label )
 {
-	QGraphicsPixmapItem * gpi;
-	QPixmap pixmap (dir+"/"+allTextures.value(_texture));
-	pixmap=pixmap.copy(x,y,w,h);
-	gpi= scene.addPixmap(pixmap);
-	if(label!=NULL)
-        {
-            if ((w>label->width())||(h>label->height()))
+    QGraphicsPixmapItem * gpi;
+    QPixmap pixmap (dir+"/"+allTextures.value(_texture));
+    pixmap=pixmap.copy(x,y,w,h);
+    gpi= scene.addPixmap(pixmap);
+    if(label!=NULL)
             {
-                if (w<h)    pixmap=pixmap.scaledToWidth(label->width(), Qt::SmoothTransformation);
-                else        pixmap=pixmap.scaledToHeight(label->height(), Qt::SmoothTransformation);
+                if ((w>62)||(h>62))
+                {
+                    if (w>h) pixmap=pixmap.scaledToWidth(63, Qt::SmoothTransformation);
+                    else pixmap=pixmap.scaledToHeight(63, Qt::SmoothTransformation);
+                }
+               label->setPixmap(pixmap);
             }
-
-           label->setPixmap(pixmap);
-        }
-	return gpi;
+    return gpi;
 }
 
 void animatron::setupUiImg()
-{
-	
+{	
 	ui.btn_r-> setIcon(QPixmap(":/ResEditor/Resources/animatron/arrow.png"));
 	ui.btn_rt->setIcon(QPixmap(":/ResEditor/Resources/animatron/arrow-045.png"));
 	ui.btn_t-> setIcon(QPixmap(":/ResEditor/Resources/animatron/arrow-090.png"));
@@ -443,7 +437,6 @@ void animatron::updateScene()
 void animatron::changeActiveItem( QTreeWidgetItem* currentItem, QTreeWidgetItem*lastItem )
 {
 	TreeWidgetItemAnim* twia;
-
 	if((currentItem->type()== TreeWidgetItemAnim::SPRITES)||(currentItem->type()== TreeWidgetItemAnim::ANIMATION_SET))
 	{
 		ui.scrollArea->takeWidget();
@@ -570,7 +563,7 @@ void animatron::deleteAllObjects()
 		sprite* sprt=sit.next();
 		delete sprt->widget;
 		delete sprt->graphicsItem; //удаление графического объекта
-		delete sprt->spriteRect;//удаление рамки
+                delete sprt->grRectItem;//удаление рамки
 		delete sprt;
 	}
 	QListIterator<anim*> ait(animList);
@@ -582,7 +575,7 @@ void animatron::deleteAllObjects()
 		{
 			frame * frm= fit.next();
 			delete frm->graphicsItem;
-			delete frm->frmRect;
+                        delete frm->grRectItem;
 		}
 		delete anm->widget;
 		delete anm;
@@ -640,11 +633,15 @@ void animatron::createActions()
 		connect(actRemoveFrame,SIGNAL(triggered()),SLOT(removeFrame()));
                 actEditFrame = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--pencil.png"),tr("Изменить фрейм"));
 		connect(actEditFrame,SIGNAL(triggered()),SLOT(editFrame()));
+
                 actMoveFrameUp = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--up.png"),tr("Передвинуть фрейм выше"));
 		connect(actMoveFrameUp,SIGNAL(triggered()),SLOT(moveFrameUp()));
                 actMoveFrameDown = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/film--down.png"),tr("Передвинуть фрейм ниже"));
 		connect(actMoveFrameDown,SIGNAL(triggered()),SLOT(moveFrameDown()));
-
+                actMoveFrameUp->setVisible(false);
+                actMoveFrameDown->setVisible(false);
+                //TODO: actMoveFrameUp
+                //TODO: actMoveFrameDown
 
 		actAddSprite->setEnabled(false);
 		actRemoveSprite->setEnabled(false);
@@ -714,7 +711,7 @@ void animatron::slotTransparent( bool _b)
 
 void animatron::addSprite()
 {
-	addNewSprite(10,0,0,"",0,0,0,0);
+        addNewSprite(10,0,0,"",0,0,1,1);
 }
 
 
@@ -741,11 +738,11 @@ void animatron::addNewSprite( int _z, int _dx, int _dy, QString _texture, int _x
  	ps->widget->ui.spinBox_y->setValue(ps->offset_y);
  	ps->widget->ui.spinBox_z->setValue(ps->z);
  	ps->drawItem= drawObject;
- 	ps->graphicsItem=createGraphicsItem(ps->texture, ps->tex_x, ps->tex_y, ps->tex_w, ps->tex_h, ps->widget->ui.label);
+        ps->graphicsItem=createGraphicsItem(ps->texture, ps->tex_x, ps->tex_y, ps->tex_w, ps->tex_h, ps->widget->ui.label);
  	ps->graphicsItem->setZValue(ps->z);
  	ps->graphicsItem->setPos(drawObject->drawRect->rect().x()+ps->offset_x, drawObject->drawRect->rect().y()+ps->offset_y);
- 	ps->spriteRect=scene.addRect(drawObject->drawRect->rect().x()+ps->offset_x, drawObject->drawRect->rect().y()+ps->offset_y, ps->tex_w, ps->tex_h);
- 	ps->spriteRect->setZValue(ps->z);	
+        ps->grRectItem=scene.addRect(drawObject->drawRect->rect().x()+ps->offset_x, drawObject->drawRect->rect().y()+ps->offset_y, ps->tex_w, ps->tex_h);
+        ps->grRectItem->setZValue(ps->z);
  
  	ps->widget->ui.checkBox_use->setChecked(true); ps->used=true;
  	ps->widget->ui.checkBox_visible->setChecked(true); ps->visible=true;
@@ -778,7 +775,7 @@ void animatron::removeSprite()
 		delete stwi->oneSprite->widget;//удалить из грида виджет
 		sprites.removeOne(stwi->oneSprite);//удалить из листа
 		delete stwi->oneSprite->graphicsItem; //удаление графического объекта
-		delete stwi->oneSprite->spriteRect;//удаление рамки
+                delete stwi->oneSprite->grRectItem;//удаление рамки
 		delete stwi->oneSprite;//удалить сам объект
 		stwi->oneSprite=NULL;
 		stwi->parent()->removeChild(stwi);//удалить из дерева
@@ -949,13 +946,13 @@ void animatron::addNewFrame( QString _texture, int _x, int _y, int _w, int _h )
 	frm->widget->ui.checkBox_use->setChecked(true); frm->used=true;
 	frm->widget->ui.checkBox_visible->setChecked(true); frm->visible=true;
 	frm->drawItem= drawObject;
-	frm->graphicsItem=createGraphicsItem(frm->texture, frm->tex_x, frm->tex_y, frm->tex_w, frm->tex_h, frm->widget->ui.label);
+        frm->graphicsItem=createGraphicsItem(frm->texture, frm->tex_x, frm->tex_y, frm->tex_w, frm->tex_h, frm->widget->ui.label);
 	TreeWidgetItemAnim * twianim = (TreeWidgetItemAnim *)(treeWidgetItem);
  	anim * pa = twianim->oneAnim;
  	frm->graphicsItem->setPos(drawObject->drawRect->rect().x()+ pa->offset_x, drawObject->drawRect->rect().y()+pa->offset_y);
-  	frm->frmRect=scene.addRect(drawObject->drawRect->rect().x()+pa->offset_x, drawObject->drawRect->rect().y()+pa->offset_y, frm->tex_w, frm->tex_h);
+        frm->grRectItem=scene.addRect(drawObject->drawRect->rect().x()+pa->offset_x, drawObject->drawRect->rect().y()+pa->offset_y, frm->tex_w, frm->tex_h);
   	frm->graphicsItem->setZValue(pa->z);
-  	frm->frmRect->setZValue(pa->z);
+        frm->grRectItem->setZValue(pa->z);
   	connect(frm->widget->ui.checkBox_visible, SIGNAL(toggled ( bool)), frm, SLOT(setVisiblity(bool)));
   	connect(frm->widget->ui.checkBox_use, SIGNAL(toggled ( bool)), frm, SLOT(setUsibility(bool)));
 
@@ -985,7 +982,7 @@ void animatron::removeFrame( QTreeWidgetItem * _twi)
 		delete stwi->oneFrame->widget;//удалить из грида виджет
 		((TreeWidgetItemAnim*)stwi->parent())->oneAnim->frames.removeOne(stwi->oneFrame);//sprites.removeOne(stwi->oneSprite);//удалить из листа
  		delete stwi->oneFrame->graphicsItem; //удаление графического объекта
- 		delete stwi->oneFrame->frmRect;//удаление рамки
+                delete stwi->oneFrame->grRectItem;//удаление рамки
  		delete stwi->oneFrame;//удалить сам объект
 		stwi->oneFrame=NULL;
  		delete  stwi;//удалить из дерева
@@ -1012,12 +1009,12 @@ void animatron::editFrame()
 
 void animatron::moveFrameUp()
 {
-
+    //TODO: animatron::moveFrameUp()
 }
 
 void animatron::moveFrameDown()
 {
-
+    //TODO: animatron::moveFrameDown()
 }
 
 void animatron::saveEditedImg( int _x,int _y,int _w, int _h, QString _texture)
@@ -1032,7 +1029,7 @@ void animatron::saveEditedImg( int _x,int _y,int _w, int _h, QString _texture)
 			oneSprite->tex_w=_w;
 			oneSprite->tex_h=_h;
 			oneSprite->texture=_texture;
-			updateSprite(oneSprite);
+                        updateGrUnit(oneSprite);
 		}
 		else if(treeItem->type()==TreeWidgetItemAnim::ANIMATION_FRAME)
 		{
@@ -1042,42 +1039,24 @@ void animatron::saveEditedImg( int _x,int _y,int _w, int _h, QString _texture)
 			oneFrame->tex_w=_w;
 			oneFrame->tex_h=_h;
 			oneFrame->texture=_texture;
-			updateFrame(oneFrame);
+                        updateGrUnit(oneFrame);
 		}
 }
 
-void animatron::updateSprite( sprite* _sprite)
+void animatron:: updateGrUnit(GraphicsUnit* gu)
 {
-	_sprite->graphicsItem->setPixmap(QPixmap(dir+"/"+allTextures.value(_sprite->texture))
-										.copy(_sprite->tex_x,_sprite->tex_y, _sprite->tex_w, _sprite->tex_h ));
-	QPixmap pxm =_sprite->graphicsItem->pixmap();
-		if((_sprite->widget->ui.label->width()<pxm.width())||(_sprite->widget->ui.label->height()<pxm.height()))
-                {
-                    if(pxm.width()<pxm.height())
-                    {pxm=pxm.scaledToWidth(_sprite->widget->ui.label->width());}
-                    else
-                    {pxm=pxm.scaledToHeight(_sprite->widget->ui.label->height());}
-                }
-	_sprite->widget->ui.label->setPixmap(pxm);
-	_sprite->spriteRect->setRect(_sprite->spriteRect->rect().x(), _sprite->spriteRect->rect().y(), _sprite->tex_w, _sprite->tex_h);
-
-}
-
-void animatron::updateFrame( frame* _frame)
-{
-	_frame->graphicsItem->setPixmap(QPixmap(dir+"/"+allTextures.value(_frame->texture))
-										.copy(_frame->tex_x,_frame->tex_y, _frame->tex_w, _frame->tex_h ));
-	QPixmap pxm =_frame->graphicsItem->pixmap();
-	if((_frame->widget->ui.label->width()<pxm.width())||(_frame->widget->ui.label->height()<pxm.height()))
-        {
-            if(pxm.width()<pxm.height())
-            {pxm=pxm.scaledToWidth(_frame->widget->ui.label->width());}
-            else
-            {pxm=pxm.scaledToHeight(_frame->widget->ui.label->height());}
-        }
-        _frame->widget->ui.label->setPixmap(pxm);
-	_frame->frmRect->setRect(_frame->frmRect->rect().x(), _frame->frmRect->rect().y(), _frame->tex_w, _frame->tex_h);
-
+    gu->graphicsItem->setPixmap(QPixmap(dir+"/"+allTextures.value(gu->texture))
+                                                                            .copy(gu->tex_x,gu->tex_y, gu->tex_w, gu->tex_h ));
+    QPixmap pxm =gu->graphicsItem->pixmap();
+    if((gu->widget->ui.label->width()<pxm.width())||(gu->widget->ui.label->height()<pxm.height()))
+    {
+        if(pxm.width()>pxm.height())
+        {pxm=pxm.scaledToWidth(gu->widget->ui.label->width());}
+        else
+        {pxm=pxm.scaledToHeight(gu->widget->ui.label->height());}
+    }
+    gu->widget->ui.label->setPixmap(pxm);
+    gu->grRectItem->setRect(gu->grRectItem->rect().x(), gu->grRectItem->rect().y(), gu->tex_w, gu->tex_h);
 }
 
 void animatron::slotSaveDraw()
@@ -1146,10 +1125,10 @@ void animatron::slotSaveDraw()
 		QDomNode lastNodeF;
 		bool seriesBegin=false;
 		QDomNode seriesNode;
-		int lastSF;
-		frame * _frame;
-		frame * _LASTframe;
-		frame * _seriesFrame;
+                int lastSF=0;
+                frame * _frame= NULL;
+                frame * _LASTframe = NULL;
+                frame * _seriesFrame = NULL;
 
                 QListIterator<frame*> frameIterator(_anim->frames);
                 while(frameIterator.hasNext())
@@ -1223,8 +1202,7 @@ void animatron::slotSaveDraw()
                                             rect.setWidth(qstrlFr[2].toInt());
                                             rect.setHeight(qstrlFr[3].toInt());
                                     }
-                            int columnsF = rect.width()/_frame->tex_w;// size_w;
-                            //int rowsF = rect.height()/size_h;
+                            int columnsF = rect.width()/_frame->tex_w;// size_w;                            
                             int numCol=_frame->seriesNum%columnsF;
                             int numRow=_frame->seriesNum/columnsF;
 

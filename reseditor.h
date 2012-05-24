@@ -10,7 +10,6 @@
 
 #include "resxmlparser.h"
 #include "dlgtexture.h"
-#include "imgcuter/imgcuter.h"
 #include "animatron/animatron.h"
 
 namespace Ui {
@@ -59,7 +58,7 @@ private:
         QTranslator * translator;
 
 protected:
-        bool isEdited; //state of edited XML file //состоянике - изменён ли XML файл
+        bool isEdited; //state of edited XML file //состояние - изменён ли XML файл
         //Actions:
         QAction *actNormalaize;
         QAction *actAddTexture;
@@ -89,6 +88,8 @@ protected slots:
         void slotCopyObject();
 
         void slotChangeLang(QAction *);
+
+        void slotAboutQt();
 };
 
 #endif // RESEDITOR_H

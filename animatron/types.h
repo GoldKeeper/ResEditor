@@ -23,17 +23,15 @@ class TreeWidgetItemAnim : public QTreeWidgetItem
 public:
 		enum itemType{SPRITES = 1010, ONE_SPRITE=1011, ANIMATIONS = 1012, ANIMATION_SET = 1013, ANIMATION_FRAME = 1014 };
 
-	TreeWidgetItemAnim ( int _type = Type ):QTreeWidgetItem (_type){nullAll();};
-	TreeWidgetItemAnim ( const QStringList & _strings, int _type = Type ):QTreeWidgetItem (_strings, _type ){nullAll();};
-	TreeWidgetItemAnim ( QTreeWidget * _parent, int _type = Type ):QTreeWidgetItem (_parent,_type){nullAll();};
-	TreeWidgetItemAnim ( QTreeWidget * _parent, const QStringList & _strings, int _type = Type ):QTreeWidgetItem (_parent, _strings, _type ){nullAll();};
-	TreeWidgetItemAnim ( QTreeWidget * _parent, QTreeWidgetItem * _preceding, int _type = Type ):QTreeWidgetItem ( _parent, _preceding, _type ){nullAll();};
-	TreeWidgetItemAnim ( QTreeWidgetItem * _parent, int _type = Type ):QTreeWidgetItem ( _parent, _type ){nullAll();};
-	TreeWidgetItemAnim ( QTreeWidgetItem * _parent, const QStringList & _strings, int _type = Type ):QTreeWidgetItem ( _parent, _strings, _type ){nullAll();};
-	TreeWidgetItemAnim ( QTreeWidgetItem * _parent, QTreeWidgetItem * _preceding, int _type = Type ):QTreeWidgetItem ( _parent, _preceding, _type ){nullAll();};
-	TreeWidgetItemAnim ( const QTreeWidgetItem & _other ):QTreeWidgetItem ( _other ){nullAll();};
-	//QList<sprite *> *sprites;
-	//QList<anim *> *animList;
+        TreeWidgetItemAnim ( int _type = Type ):QTreeWidgetItem (_type){nullAll();}
+        TreeWidgetItemAnim ( const QStringList & _strings, int _type = Type ):QTreeWidgetItem (_strings, _type ){nullAll();}
+        TreeWidgetItemAnim ( QTreeWidget * _parent, int _type = Type ):QTreeWidgetItem (_parent,_type){nullAll();}
+        TreeWidgetItemAnim ( QTreeWidget * _parent, const QStringList & _strings, int _type = Type ):QTreeWidgetItem (_parent, _strings, _type ){nullAll();}
+        TreeWidgetItemAnim ( QTreeWidget * _parent, QTreeWidgetItem * _preceding, int _type = Type ):QTreeWidgetItem ( _parent, _preceding, _type ){nullAll();}
+        TreeWidgetItemAnim ( QTreeWidgetItem * _parent, int _type = Type ):QTreeWidgetItem ( _parent, _type ){nullAll();}
+        TreeWidgetItemAnim ( QTreeWidgetItem * _parent, const QStringList & _strings, int _type = Type ):QTreeWidgetItem ( _parent, _strings, _type ){nullAll();}
+        TreeWidgetItemAnim ( QTreeWidgetItem * _parent, QTreeWidgetItem * _preceding, int _type = Type ):QTreeWidgetItem ( _parent, _preceding, _type ){nullAll();}
+        TreeWidgetItemAnim ( const QTreeWidgetItem & _other ):QTreeWidgetItem ( _other ){nullAll();}
 	
 	QWidget * widget;
 	QScrollArea * scrollArea;

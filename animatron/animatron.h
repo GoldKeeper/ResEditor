@@ -12,16 +12,13 @@
 #include "anim.h"
 #include "types.h"
 #include "widgetcontrol.h"
-
 #include <QMessageBox>
 #include <QGraphicsView>
 #include <QCheckBox>
 #include <QFrame>
-//#include <QStackedWidget>
 #include <QAction>
 #include <QToolBar>
 #include <QDomDocument>
-
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QTranslator>
@@ -38,18 +35,17 @@ public:
 	imgCuter *imgCtr;
         QTranslator * translator;
 
-	void setupUiImg();
-	void connectUi();
+        void setupUiImg();//setup icons to arrows for move object and connect slots for it
+        void connectUi();//connects some ui widgets
 	
-	void createActions();	
+        void createActions();//K.O.
 
 
-	void fillTree();
-	void setSettings();
-	void setSettings(QDomNode _node);
-	void deleteUslessNodes();
+        void fillTree();//filling tree, connecting objects, set UI setups
+        void setSettings(QDomNode _node);//convert DOM node to objects Sptites frames and etc
+        void deleteUslessNodes();//romove prepeared useless nodes
 
-	void deleteAllObjects();
+        void deleteAllObjects();//used in destructor
 
 	QGraphicsPixmapItem * createGraphicsItem(QString texture, int x, int y, int w, int h, QLabel * label=NULL);
 
@@ -57,7 +53,7 @@ public:
  	{delete this;}
 
 	QString dir;
-	QMap<QString, QString> allTextures;
+        QMap<QString, QString> allTextures;//<name, path>
 	QDomNode node;
 	QList<QDomNode> uslessNodes;
 
@@ -81,8 +77,8 @@ private:
 	void addNewFrame(QString _texture, int _x, int _y, int _w, int _h);
 
 	void changeActiveWidget( QTreeWidgetItem* currentItem, QTreeWidgetItem*lastItem );
-	void updateSprite(sprite*);
-	void updateFrame(frame* );
+
+        void updateGrUnit(GraphicsUnit* gu);
 	
 public:
 	QAction * actStartAnimation;
@@ -129,11 +125,7 @@ public slots:
 		void slotTransparent(bool);
 
 		void clickedOnWidget(QTreeWidgetItem * _treeWI){ ui.treeWidget->setCurrentItem(_treeWI);}
-                void dbkClickedOnWidget(QTreeWidgetItem * _treeWI)
-                {
-                    editSprite();
-                            //QMessageBox::information(0,0,"/* ui.treeWidget->setCurrentItem(_treeWI);*/");
-                }
+                void dbkClickedOnWidget(QTreeWidgetItem * _treeWI) {editSprite();}
 
 		void addSprite();
 		void removeSprite();
@@ -162,8 +154,6 @@ public slots:
 		void moveRB(){moveR(); moveB();}
 
 		void updateScene();
-
-
 
 signals:
 		void animationStart(void);

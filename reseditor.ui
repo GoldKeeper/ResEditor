@@ -67,6 +67,7 @@
      <string>Информация</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="action_Qt"/>
     <addaction name="actionUpdate_history"/>
    </widget>
    <widget class="QMenu" name="menuLang">
@@ -115,6 +116,11 @@
   <action name="actionSaveAs">
    <property name="text">
     <string>Сохранить как ...</string>
+   </property>
+  </action>
+  <action name="action_Qt">
+   <property name="text">
+    <string>Про Qt</string>
    </property>
   </action>
  </widget>

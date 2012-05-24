@@ -86,7 +86,7 @@ public:
 			{
 				framesToAnim.append(frm);
 				frm->graphicsItem->setVisible(false);
-				frm->frmRect->setVisible(false);
+                                frm->grRectItem->setVisible(false);
 			}
 		}
 		visibleFrames=framesToAnim.count();
@@ -100,7 +100,7 @@ public:
 			{
 				frm=fi.next();
 					frm->graphicsItem->setVisible(frm->visible);
-					frm->frmRect->setVisible(frm->used);
+                                        frm->grRectItem->setVisible(frm->used);
 			}
 	}
 
@@ -118,7 +118,7 @@ public:
 			while(fit.hasNext())
 			{
 				frame * frm =fit.next();
-				frm->frmRect->setRect(-drawItem->offset_x+offset_x, -drawItem->offset_y+offset_y, frm->tex_w,frm->tex_h);
+                                frm->grRectItem->setRect(-drawItem->offset_x+offset_x, -drawItem->offset_y+offset_y, frm->tex_w,frm->tex_h);
 				frm->graphicsItem->setPos(-drawItem->offset_x+offset_x,-drawItem->offset_y+offset_y);
 			}
 		}
@@ -136,15 +136,15 @@ public:
 			if(currentFrame)
 			{
 				framesToAnim[currentFrame-1]->graphicsItem->setVisible(false);
-				framesToAnim[currentFrame-1]->frmRect->setVisible(false);
+                                framesToAnim[currentFrame-1]->grRectItem->setVisible(false);
 			}
 			else
 			{
 				framesToAnim[visibleFrames-1]->graphicsItem->setVisible(false);
-				framesToAnim[visibleFrames-1]->frmRect->setVisible(false);
+                                framesToAnim[visibleFrames-1]->grRectItem->setVisible(false);
 			}
 			framesToAnim[currentFrame]->graphicsItem->setVisible(true);
-			framesToAnim[currentFrame]->frmRect->setVisible(framesToAnim[currentFrame]->used);
+                        framesToAnim[currentFrame]->grRectItem->setVisible(framesToAnim[currentFrame]->used);
 			currentFrame++;
 			if(currentFrame==visibleFrames)currentFrame=0;
 		}

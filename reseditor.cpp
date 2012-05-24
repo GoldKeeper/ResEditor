@@ -45,6 +45,11 @@ void ResEditor::prepeareActions()
 
         connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(slotAbout()));
         connect(ui->actionUpdate_history, SIGNAL(triggered()), this, SLOT(slotUpdateHistory()));
+        ui->actionUpdate_history->setVisible(false);
+        //TODO: ui->actionUpdate_history !!!!  slotUpdateHistory()
+
+        connect(ui->action_Qt, SIGNAL(triggered()), SLOT(slotAboutQt()));
+        ui->action_Qt->setIcon(QPixmap(":/ResEditor/Resources/qt-logo.png"));
 
         ui->mainToolBar->addAction(ui->actionOpen);
         connect(ui->actionOpen, SIGNAL(triggered()), SLOT(slotOpenXml()));
@@ -114,8 +119,6 @@ void ResEditor::prepeareActions()
         tranlateFiles.insert(action, ":/lang/reseditor_eng.qm");
 
         connect(actionGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotChangeLang(QAction*)));
-
-        //tranlateFiles
 }
 
 void ResEditor::retranslate()
@@ -257,8 +260,6 @@ void ResEditor::enablingActions()
                 actDeleteObject->setEnabled(true);
                 actCopyObject->setEnabled(true);
                 break;
-        //case ResXmlParser::SPRITE: break; //уже не понадобится потом убрать
-        //case ResXmlParser::TILE: break; //уже не понадобится потом убрать
         case ResXmlParser::OTHER: break;
         }
         actAddTexture->setEnabled(true);
@@ -353,8 +354,7 @@ void ResEditor::slotEditObject()
                     animatronObj->imgCtr->mapTextures.unite(ResXmlParser::Instance().allTextures);
                    animatronObj->dir=xmlFileWorkDir;
                    animatronObj->imgCtr->directory=xmlFileWorkDir;
-                   animatronObj->imgCtr->updateTextureMap();
-                   animatronObj->setSettings();
+                   animatronObj->imgCtr->updateTextureMap();                   
                    animatronObj->setSettings(treeNodes.value(ui->treeWidget->currentItem()));
                    animatronObj->show();
          }
@@ -448,7 +448,7 @@ void ResEditor::objectSaved()
 
 void ResEditor::slotAbout()
 {
-    QString ver= "v 1.3";
+    QString ver= "v 1.3.1";
     QString text="";
     text+= tr("Редактор ресурсов") + ver + "\n" + tr("для проекта")+ " ORIGIN-WORLD\n";
     text+="http://origin-world.com\n\n";
@@ -479,6 +479,10 @@ void ResEditor::slotUpdateHistory()
         v1_1+="2)Проведена интернационализация\n";
         v1_1+="3)Добавлено контекстное меню для текстур\n";
         v1_1+="4)Поправлено добавление нового фрейма в анимацию\n";
+    v1_1+="ver. 1.3.1:\n";
+        v1_1+="1)Поправлена масштабируемость миниатюр\n";
+        v1_1+="2)Испралена ошибка при создании нового элемента (спрайт/фрейм) при нарезке текстуры\n";
+        v1_1+="3)Инофрмация о версии Qt\n";
 
     QMessageBox::information(this, tr("История обновлений"), v1_1);
 }
@@ -566,6 +570,11 @@ void ResEditor::changeEvent(QEvent *event)
         retranslate ();
     }
     QMainWindow::changeEvent (event);
+}
+
+void ResEditor::slotAboutQt()
+{
+    QMessageBox::aboutQt(this);
 }
 
 

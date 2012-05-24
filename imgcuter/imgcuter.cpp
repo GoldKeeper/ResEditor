@@ -569,6 +569,7 @@ void imgCuter::setSprite( QString textureName, int x, int y, int w, int h )
 	ui.spb_Y->setValue(y);
 	ui.spb_W->setValue(w);
 	ui.spb_H->setValue(h);
+        selectionRect->setRect(x,y,w,h);
 	rePutHolders();
 }
 
