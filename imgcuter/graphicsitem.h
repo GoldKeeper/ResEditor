@@ -8,7 +8,7 @@
 class GraphicsItem : public QGraphicsItem
 {
 public:
-	GraphicsItem ( QGraphicsItem * parent = 0 ):QGraphicsItem (parent){ };
+        GraphicsItem ( QGraphicsItem * parent = 0 ):QGraphicsItem (parent){ }
 
 
 };
@@ -17,10 +17,10 @@ public:
 class GraphicsRectItem : public QGraphicsRectItem
 {
 public:
-	GraphicsRectItem ( QGraphicsItem * parent = 0 ):QGraphicsRectItem (parent){ };
+        GraphicsRectItem ( QGraphicsItem * parent = 0 ):QGraphicsRectItem (parent){ }
 
 	int itemType;
-	int type(){return itemType;};
+        int type(){return itemType;}
 
 // 	void mousePressEvent(QGraphicsSceneMouseEvent *event){}
 // 	void mouseMoveEvent(QGraphicsSceneMouseEvent *event){}

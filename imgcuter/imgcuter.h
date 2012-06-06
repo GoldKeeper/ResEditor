@@ -18,6 +18,7 @@
 #include <QAction>
 #include <QTranslator>
 
+#include <QMessageBox>
 class imgCuter : public QMainWindow
 {
 	Q_OBJECT
@@ -89,6 +90,53 @@ public:
 	QAction * zoomOne;
 	QAction * zoomOut;
 
+        QAction * showSprites;
+        QAction * showFrames;
+
+        enum USEDPIX{SPRITE, FRAME};
+        struct usedSectors
+        {
+           explicit usedSectors(const QString &_texture, int _x, int _y, int _w, int _h, USEDPIX _currentType)
+                :texture(_texture), x(_x), y(_y), w(_w), h(_h), currentType(_currentType), gitem(NULL){}
+            QString texture;
+            int x,y,w,h;
+            USEDPIX currentType;            
+            GraphicsRectItem * gitem;
+        };
+        QList<usedSectors*> sectors;
+        void addSector(const QString &texture, int x, int y, int w, int h, USEDPIX currentType)
+        {
+            //imgCtr->addSector("", 5,5,100,100, imgCuter::SPRITE);
+            usedSectors *sector = new usedSectors(texture, x,y,w,h, currentType);
+            sector->gitem = new GraphicsRectItem();
+            scene.addItem((QGraphicsItem*)sector->gitem);
+            sector->gitem->setRect(x,y, w,h);
+            QPen pen = QPen(Qt::SolidLine);
+            QBrush brush = QBrush(Qt::SolidPattern);
+
+            switch(currentType){
+            case SPRITE:
+                pen.setColor(QColor(0,0,180));
+                brush.setColor(QColor(100,255,100,50));
+                break;
+            case FRAME:
+                pen.setColor(QColor(0,180,0));
+                brush.setColor(QColor(100,100,255,50));
+                break;
+            }
+            sector->gitem->setZValue(990);
+            sector->gitem->setPen(pen);
+            sector->gitem->setBrush(brush);            
+           sectors.append(sector);
+        }
+        void clearSectors()
+        {
+            qDeleteAll(sectors);
+            sectors.clear();
+        }
+
+
+
 public slots:
 	void loadTexture();
 	void changeTexture();
@@ -119,6 +167,9 @@ public slots:
         void slotZoomOne();
         void slotZoomOut();
 
+        void slotSpritesShow(bool b);
+        void slotFramesShow(bool b);
+        void resetShownSectors();
 
 signals:
 	void movedRectToX(int);

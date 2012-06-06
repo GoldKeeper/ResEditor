@@ -77,13 +77,12 @@ imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags, QString translateFile)
 	updateTextureMap();
 
 	ui.spb_Z->setVisible(false);
-	ui.label_5->setVisible(false);
-
-       // ui.retranslateUi(this);
+        ui.label_5->setVisible(false);
 }
 
 imgCuter::~imgCuter()
 {
+    clearSectors();
     qApp->removeTranslator(translator);
 }
 
@@ -96,16 +95,15 @@ void imgCuter::updateTextureMap()
 
 void imgCuter::initializeRect()
 {	
-	QPen pen = QPen(Qt::DotLine);
-	//QPen penLine = QPen(Qt::SolidLine);// penLine.setWidth(1);
+	QPen pen = QPen(Qt::DotLine);	
 	QBrush brush = QBrush(Qt::SolidPattern);
 	brush.setColor(Qt::white);
 	 	lineTop = scene.addLine(-20000, 0, 20000, 0, pen);
 	 	lineLeft = scene.addLine(0, -20000, 0, 20000, pen);
 	 	lineRight = scene.addLine(0, -20000, 0, 20000, pen); 
 	 	lineBottom = scene.addLine(-20000, 0, 200000, 0, pen);
-	selectionRect = new GraphicsRectItem();
-	scene.addItem((QGraphicsItem*)selectionRect);
+        selectionRect = new GraphicsRectItem();
+	scene.addItem((QGraphicsItem*)selectionRect);        
 	selectionRect->setRect(0,0,20,20);
 	selectionRect->itemType=imgCuter::SEL;
 	selectionRect->setCursor(Qt::SizeAllCursor);
@@ -192,6 +190,17 @@ zoomOne = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/magn
 connect(zoomOne,SIGNAL(triggered()),this,SLOT(slotZoomOne()));
 zoomOut = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/magnifier-zoom-out.png"),tr("Уменьшить"));
 connect(zoomOut,SIGNAL(triggered()),this,SLOT(slotZoomOut()));
+
+showSprites=ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/images.png"), tr("Спрайты"));
+showSprites->setCheckable(true);
+showSprites->setChecked(true);
+connect(showSprites, SIGNAL(triggered(bool)), SLOT(slotSpritesShow(bool)));
+
+showFrames=ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/animatron/films.png"), tr("Фреймы"));
+showFrames->setCheckable(true);
+showFrames->setChecked(true);
+connect(showFrames, SIGNAL(triggered(bool)), SLOT(slotFramesShow(bool)));
+
 }
 
 
@@ -210,7 +219,7 @@ void imgCuter::loadTexture()
 void imgCuter::changeTexture()
 {
 	QString str = directory+"/"+mapTextures.value(ui.comboBoxTextures->currentText());
-	//QMessageBox::information(0,0,directory+"/"+mapTextures.value(ui.comboBoxTextures->currentText()));
+
 	setWindowTitle(str);
 	pixmapTexture = QPixmap(str);
 	scene.setSceneRect(pixmapTexture.rect());
@@ -222,12 +231,12 @@ void imgCuter::changeTexture()
 	lineRight->setPos(pixmapTexture.width(), 0);
 	lineBottom->setPos(0, pixmapTexture.height());	
 
+        resetShownSectors();
 }
 
 
 void imgCuter::rePutHolders()
-{
-	//selectionRect;
+{	
 	selRL->setRect(selectionRect->rect().left()-6, selectionRect->rect().top()+selectionRect->rect().height()/2-3,5,5);
  	selRLT->setRect(selectionRect->rect().left()-6,selectionRect->rect().top()-6,5,5);
  	selRLB->setRect(selectionRect->rect().left()-6,selectionRect->rect().bottom()+1,5,5);
@@ -409,30 +418,42 @@ void imgCuter::getMinimap(bool b)
 
 void imgCuter::getCrop()
 {
+    //TODO: finde all call this function and remove all extra call (called too often)
+    QRectF selRect =  selectionRect->rect();
 	if(texture!=NULL)
 	{
-	QPixmap croped=pixmapTexture.copy(selectionRect->rect().x(), selectionRect->rect().y(), selectionRect->rect().width(), selectionRect->rect().height());
-	qreal rectDiv=1;
-		if(selectionRect->rect().height()!=0)
-		rectDiv= selectionRect->rect().width()/selectionRect->rect().height();
-	qreal labelDiv =1;
+           if (selRect.x()>scene.width())selRect.setX(scene.width());
+           if (selRect.y()>scene.height())selRect.setY(scene.height());
+           if (selRect.right()>scene.width())selRect.setRight(scene.width());
+           if (selRect.bottom()>scene.height())selRect.setBottom(scene.height());
+           //ui.statusBar->showMessage(QString("%1 %2 %3 %4").arg(selRect.x()).arg(selRect.y()).arg(selRect.width()).arg(selRect.height()));
+
+           QPixmap croped;
+           if((selRect.width()<1)||(selRect.height()<1))
+               croped=QPixmap();
+           else
+            croped=pixmapTexture.copy(selRect.x(), selRect.y(), selRect.width(), selRect.height());
+
+            qreal rectDiv=1;
+                if(selRect.height()!=0)
+                rectDiv= selRect.width()/selRect.height();
+            qreal labelDiv =1;
 		if(ui.label_crop->height()!=0)
 		labelDiv =((qreal)(ui.label_crop->width())/(qreal)(ui.label_crop->height()));
-	if ((selectionRect->rect().width()<=ui.label_crop->width())&&(selectionRect->rect().height()<=ui.label_crop->height()))
-	{
+            if ((selRect.width()<=ui.label_crop->width())&&(selRect.height()<=ui.label_crop->height()))
+            {
 		//ui.label_crop ->setPixmap(croped);
-	}
-	else if(rectDiv<=labelDiv)
-	{
+            }
+            else if(rectDiv<=labelDiv)
+            {
 		if(croped.width()>ui.label_crop->width());
 		croped=croped.scaledToHeight(ui.label_crop->height());//,Qt::SmoothTransformation);		
-	}
-	else if(rectDiv>labelDiv)
-	{
+            }
+            else if(rectDiv>labelDiv)
+            {
 		if(croped.height()>ui.label_crop->height());
 		croped=croped.scaledToWidth(ui.label_crop->width());//, Qt::SmoothTransformation);
-	}
-		
+            }
 		ui.label_crop ->setPixmap(croped);
 	}
 }
@@ -563,8 +584,7 @@ void imgCuter::setSprite( QString textureName, int x, int y, int w, int h )
 			{scene.setSceneRect(-10,-10,20,20);}
 		else
 			{ui.comboBoxTextures->setCurrentIndex(0);}
-	}
-	//selectionRect->setRect(x,y,w,h);
+        }
 	ui.spb_X->setValue(x);
 	ui.spb_Y->setValue(y);
 	ui.spb_W->setValue(w);
@@ -619,6 +639,45 @@ void imgCuter::slotZoomOut()
 		sceneScale--;
 		graphicsView->scale(0.5,0.5);
         }
+}
+
+void imgCuter::slotSpritesShow(bool b)
+{
+    resetShownSectors();
+}
+
+void imgCuter::slotFramesShow(bool b)
+{
+    resetShownSectors();
+}
+
+void imgCuter::resetShownSectors()
+{
+    QString currentTexture = ui.comboBoxTextures->currentText();
+    QListIterator<usedSectors*>iterus(sectors);
+    while(iterus.hasNext())
+    {
+        usedSectors* us= iterus.next();
+
+        if(us->texture == currentTexture)
+        {
+            if ((us->currentType == SPRITE)&&showSprites->isChecked())
+            {
+                us->gitem->setVisible(true);
+            }
+            else if ((us->currentType == FRAME)&&showFrames->isChecked())
+            {
+                us->gitem->setVisible(true);
+            }
+            else
+                us->gitem->setVisible(false);
+
+        }
+        else
+        {
+            us->gitem->setVisible(false);
+        }
+    }
 }
 
 

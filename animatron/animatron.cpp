@@ -20,6 +20,7 @@ animatron::animatron(QWidget *parent, Qt::WFlags flags, QString translateFile)
 
 	ui.setupUi(this); 
         imgCtr=new imgCuter(this, Qt::Dialog, translateFile);
+        imgCtr->update();
 
 	connect(imgCtr, SIGNAL(saveingData(int,int,int,int, QString)),this, SLOT(saveEditedImg(int,int,int,int, QString)));
 
@@ -44,7 +45,7 @@ animatron::animatron(QWidget *parent, Qt::WFlags flags, QString translateFile)
 
 animatron::~animatron()
 {
-	deleteAllObjects();
+        deleteAllObjects();
 	delete imgCtr;
 }
 
@@ -787,6 +788,7 @@ void animatron::editSprite()
 	TreeWidgetItemAnim* stwi=(TreeWidgetItemAnim*)ui.treeWidget->currentItem();
 	if(stwi->type()==TreeWidgetItemAnim::ONE_SPRITE)
 	{
+                prepeareSectors();
 		imgCtr->setVisible(true);
 		imgCtr->setSprite(
 			stwi->oneSprite->texture,
@@ -996,6 +998,7 @@ void animatron::editFrame()
 	TreeWidgetItemAnim* stwi=(TreeWidgetItemAnim*)ui.treeWidget->currentItem();
 	if(stwi->type()==TreeWidgetItemAnim::ANIMATION_FRAME)
 	{
+                        prepeareSectors();
 			imgCtr->setVisible(true);
 			imgCtr->setSprite(
 				stwi->oneFrame->texture,
@@ -1340,7 +1343,29 @@ void animatron::deleteUslessNodes()
 
 void animatron::slotObjNameChanged( const QString & _text)
 {
-	drawObject->name=_text;
+    drawObject->name=_text;
+}
+
+void animatron::prepeareSectors()
+{
+    imgCtr->clearSectors();
+    QListIterator<sprite*> sit(sprites);
+    while(sit.hasNext())
+    {
+            sprite* sprt=sit.next();
+            imgCtr->addSector(sprt->texture, sprt->tex_x, sprt->tex_y, sprt->tex_w, sprt->tex_h, imgCuter::SPRITE);
+    }
+    QListIterator<anim*> ait(animList);
+    while (ait.hasNext())
+    {
+            anim * anm = ait.next();
+            QListIterator<frame*> fit(anm->frames);
+            while(fit.hasNext())
+            {
+                    frame * frm= fit.next();
+                    imgCtr->addSector(frm->texture, frm->tex_x, frm->tex_y, frm->tex_w, frm->tex_h, imgCuter::FRAME);
+            }
+    }
 }
 
 

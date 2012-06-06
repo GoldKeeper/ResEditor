@@ -11,9 +11,9 @@ class GraphicsScene : public QGraphicsScene
 
 public:
 
-	GraphicsScene ( QObject * parent = 0 ):QGraphicsScene (parent){};
-	GraphicsScene ( const QRectF & sceneRect, QObject * parent = 0 ):QGraphicsScene (sceneRect,parent){};
-	GraphicsScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent = 0 ):QGraphicsScene (x,y,width,height, parent ){};
+        GraphicsScene ( QObject * parent = 0 ):QGraphicsScene (parent){}
+        GraphicsScene ( const QRectF & sceneRect, QObject * parent = 0 ):QGraphicsScene (sceneRect,parent){}
+        GraphicsScene ( qreal x, qreal y, qreal width, qreal height, QObject * parent = 0 ):QGraphicsScene (x,y,width,height, parent ){}
 
 
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *);

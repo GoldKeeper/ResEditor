@@ -79,6 +79,8 @@ private:
 	void changeActiveWidget( QTreeWidgetItem* currentItem, QTreeWidgetItem*lastItem );
 
         void updateGrUnit(GraphicsUnit* gu);
+
+        void prepeareSectors();
 	
 public:
 	QAction * actStartAnimation;

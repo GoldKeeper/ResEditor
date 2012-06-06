@@ -10,8 +10,8 @@ class GraphicsView : public QGraphicsView
 	Q_OBJECT
 
 public:
-	GraphicsView( QWidget * _parent = 0 ):QGraphicsView ( _parent ){};
-	GraphicsView ( QGraphicsScene * scene, QWidget * parent = 0 ):QGraphicsView ( scene,parent){};
+        GraphicsView( QWidget * _parent = 0 ):QGraphicsView ( _parent ){}
+        GraphicsView ( QGraphicsScene * scene, QWidget * parent = 0 ):QGraphicsView ( scene,parent){}
 
 //	~GraphicsView();
 

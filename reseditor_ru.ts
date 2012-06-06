@@ -6,7 +6,7 @@
     <name>ResEditor</name>
     <message>
         <location filename="reseditor.ui" line="14"/>
-        <location filename="reseditor.cpp" line="452"/>
+        <location filename="reseditor.cpp" line="453"/>
         <source>Редактор ресурсов</source>
         <translation></translation>
     </message>
@@ -32,7 +32,7 @@
     </message>
     <message>
         <location filename="reseditor.ui" line="98"/>
-        <location filename="reseditor.cpp" line="537"/>
+        <location filename="reseditor.cpp" line="546"/>
         <source>Сохранить</source>
         <translation></translation>
     </message>
@@ -62,149 +62,149 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="68"/>
-        <location filename="reseditor.cpp" line="125"/>
+        <location filename="reseditor.cpp" line="69"/>
+        <location filename="reseditor.cpp" line="126"/>
         <source>Упорядочить узлы</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="73"/>
-        <location filename="reseditor.cpp" line="126"/>
+        <location filename="reseditor.cpp" line="74"/>
+        <location filename="reseditor.cpp" line="127"/>
         <source>Добавить текстуру</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="75"/>
-        <location filename="reseditor.cpp" line="127"/>
+        <location filename="reseditor.cpp" line="76"/>
+        <location filename="reseditor.cpp" line="128"/>
         <source>Удалить текстуру</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="77"/>
-        <location filename="reseditor.cpp" line="128"/>
+        <location filename="reseditor.cpp" line="78"/>
+        <location filename="reseditor.cpp" line="129"/>
         <source>Добавить объект</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="79"/>
-        <location filename="reseditor.cpp" line="129"/>
+        <location filename="reseditor.cpp" line="80"/>
+        <location filename="reseditor.cpp" line="130"/>
         <source>Редактировать объект</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="81"/>
-        <location filename="reseditor.cpp" line="130"/>
+        <location filename="reseditor.cpp" line="82"/>
+        <location filename="reseditor.cpp" line="131"/>
         <source>Удалить объект</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="83"/>
-        <location filename="reseditor.cpp" line="131"/>
+        <location filename="reseditor.cpp" line="84"/>
+        <location filename="reseditor.cpp" line="132"/>
         <source>Копировать объект</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="109"/>
+        <location filename="reseditor.cpp" line="110"/>
         <source>Русский</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="115"/>
+        <location filename="reseditor.cpp" line="116"/>
         <source>English</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="148"/>
+        <location filename="reseditor.cpp" line="149"/>
         <source>Редактор ресурсов: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="161"/>
+        <location filename="reseditor.cpp" line="162"/>
         <source>Открыть XML</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="161"/>
+        <location filename="reseditor.cpp" line="162"/>
         <source>XML-файлы</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="171"/>
+        <location filename="reseditor.cpp" line="172"/>
         <source>Неверное расширение файла</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="174"/>
+        <location filename="reseditor.cpp" line="175"/>
         <source>Файл не найден</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="272"/>
+        <location filename="reseditor.cpp" line="273"/>
         <source>Название текстуры</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="273"/>
-        <location filename="reseditor.cpp" line="316"/>
+        <location filename="reseditor.cpp" line="274"/>
+        <location filename="reseditor.cpp" line="317"/>
         <source>Название:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="279"/>
+        <location filename="reseditor.cpp" line="280"/>
         <source>Файл текстуры</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="279"/>
+        <location filename="reseditor.cpp" line="280"/>
         <source>PNG-файлы</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="142"/>
-        <location filename="reseditor.cpp" line="291"/>
-        <location filename="reseditor.cpp" line="303"/>
+        <location filename="reseditor.cpp" line="143"/>
+        <location filename="reseditor.cpp" line="292"/>
+        <location filename="reseditor.cpp" line="304"/>
         <source>Текстуры</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="315"/>
+        <location filename="reseditor.cpp" line="316"/>
         <source>Название объекта</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="141"/>
-        <location filename="reseditor.cpp" line="328"/>
-        <location filename="reseditor.cpp" line="508"/>
+        <location filename="reseditor.cpp" line="142"/>
+        <location filename="reseditor.cpp" line="329"/>
+        <location filename="reseditor.cpp" line="517"/>
         <source>Объекты</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="452"/>
+        <location filename="reseditor.cpp" line="453"/>
         <source>для проекта</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="482"/>
+        <location filename="reseditor.cpp" line="491"/>
         <source>История обновлений</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="535"/>
+        <location filename="reseditor.cpp" line="544"/>
         <source>Внимание</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="536"/>
+        <location filename="reseditor.cpp" line="545"/>
         <source>Внесены изменения.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="538"/>
+        <location filename="reseditor.cpp" line="547"/>
         <source>Не сохранять</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="reseditor.cpp" line="539"/>
+        <location filename="reseditor.cpp" line="548"/>
         <source>Отмена</source>
         <translation></translation>
     </message>
@@ -241,168 +241,168 @@
 <context>
     <name>animatron</name>
     <message>
-        <location filename="animatron/animatron.cpp" line="63"/>
+        <location filename="animatron/animatron.cpp" line="64"/>
         <source>Cпрайты</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="78"/>
+        <location filename="animatron/animatron.cpp" line="79"/>
         <source>Cпрайт</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="118"/>
+        <location filename="animatron/animatron.cpp" line="119"/>
         <source>Анимации</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="126"/>
+        <location filename="animatron/animatron.cpp" line="127"/>
         <source>Анимация</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="175"/>
-        <location filename="animatron/animatron.cpp" line="924"/>
+        <location filename="animatron/animatron.cpp" line="176"/>
+        <location filename="animatron/animatron.cpp" line="926"/>
         <source>Фрейм</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="449"/>
-        <location filename="animatron/animatron.cpp" line="454"/>
+        <location filename="animatron/animatron.cpp" line="450"/>
+        <location filename="animatron/animatron.cpp" line="455"/>
         <source>Спрайты объекта</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="462"/>
-        <location filename="animatron/animatron.cpp" line="469"/>
-        <location filename="animatron/animatron.cpp" line="474"/>
+        <location filename="animatron/animatron.cpp" line="463"/>
+        <location filename="animatron/animatron.cpp" line="470"/>
+        <location filename="animatron/animatron.cpp" line="475"/>
         <source>Фреймы одной анимации</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="587"/>
+        <location filename="animatron/animatron.cpp" line="588"/>
         <source>Старт</source>
         <oldsource>старт</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="590"/>
+        <location filename="animatron/animatron.cpp" line="591"/>
         <source>Стоп</source>
         <oldsource>стоп</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="594"/>
+        <location filename="animatron/animatron.cpp" line="595"/>
         <source>Сохранить</source>
         <oldsource>сохранить</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="598"/>
+        <location filename="animatron/animatron.cpp" line="599"/>
         <source>Приблизить</source>
         <oldsource>приблизить</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="600"/>
+        <location filename="animatron/animatron.cpp" line="601"/>
         <source>Масштаб 1:1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="602"/>
+        <location filename="animatron/animatron.cpp" line="603"/>
         <source>Отдалить</source>
         <oldsource>удалить</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="604"/>
+        <location filename="animatron/animatron.cpp" line="605"/>
         <source>Текстура земли</source>
         <oldsource>текстура земли</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="607"/>
+        <location filename="animatron/animatron.cpp" line="608"/>
         <source>Сетка</source>
         <oldsource>сетка</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="610"/>
+        <location filename="animatron/animatron.cpp" line="611"/>
         <source>Прозрачность</source>
         <oldsource>прозрачность</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="620"/>
+        <location filename="animatron/animatron.cpp" line="621"/>
         <source>Добавить спрайт</source>
         <oldsource>добавить спрайт</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="622"/>
+        <location filename="animatron/animatron.cpp" line="623"/>
         <source>Удалить спрайт</source>
         <oldsource>удалить спрайт</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="624"/>
+        <location filename="animatron/animatron.cpp" line="625"/>
         <source>Изменить спрайт</source>
         <oldsource>изменить спрайт</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="626"/>
+        <location filename="animatron/animatron.cpp" line="627"/>
         <source>Добавить анимацию</source>
         <oldsource>добавить анимацию</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="628"/>
+        <location filename="animatron/animatron.cpp" line="629"/>
         <source>Удалить анимацию</source>
         <oldsource>удалить анимацию</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="630"/>
+        <location filename="animatron/animatron.cpp" line="631"/>
         <source>Добавить фрейм</source>
         <oldsource>добавить фрейм</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="632"/>
+        <location filename="animatron/animatron.cpp" line="633"/>
         <source>Удалить фрейм</source>
         <oldsource>удалить фрейм</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="634"/>
+        <location filename="animatron/animatron.cpp" line="635"/>
         <source>Изменить фрейм</source>
         <oldsource>изменить фрейм</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="637"/>
+        <location filename="animatron/animatron.cpp" line="638"/>
         <source>Передвинуть фрейм выше</source>
         <oldsource>передвинуть фрейм выше</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="639"/>
+        <location filename="animatron/animatron.cpp" line="640"/>
         <source>Передвинуть фрейм ниже</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="726"/>
+        <location filename="animatron/animatron.cpp" line="727"/>
         <source>спрайт</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="813"/>
+        <location filename="animatron/animatron.cpp" line="815"/>
         <source>анимация</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="animatron/animatron.cpp" line="824"/>
+        <location filename="animatron/animatron.cpp" line="826"/>
         <source>Время</source>
         <translation></translation>
     </message>
@@ -473,33 +473,43 @@
 <context>
     <name>imgCuter</name>
     <message>
-        <location filename="imgcuter/imgcuter.cpp" line="181"/>
+        <location filename="imgcuter/imgcuter.cpp" line="179"/>
         <source>Сохранить</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="imgcuter/imgcuter.cpp" line="183"/>
+        <location filename="imgcuter/imgcuter.cpp" line="181"/>
         <source>Обновить текстуру</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="imgcuter/imgcuter.cpp" line="185"/>
+        <location filename="imgcuter/imgcuter.cpp" line="183"/>
         <source>Шахматный фон</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="imgcuter/imgcuter.cpp" line="189"/>
+        <location filename="imgcuter/imgcuter.cpp" line="187"/>
         <source>Увеличить</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="imgcuter/imgcuter.cpp" line="191"/>
+        <location filename="imgcuter/imgcuter.cpp" line="189"/>
         <source>Масштаб 1:1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="imgcuter/imgcuter.cpp" line="193"/>
+        <location filename="imgcuter/imgcuter.cpp" line="191"/>
         <source>Уменьшить</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="imgcuter/imgcuter.cpp" line="194"/>
+        <source>Спрайты</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="imgcuter/imgcuter.cpp" line="199"/>
+        <source>Фреймы</source>
         <translation></translation>
     </message>
 </context>
