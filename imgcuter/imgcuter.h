@@ -98,6 +98,7 @@ public:
         {
            explicit usedSectors(const QString &_texture, int _x, int _y, int _w, int _h, USEDPIX _currentType)
                 :texture(_texture), x(_x), y(_y), w(_w), h(_h), currentType(_currentType), gitem(NULL){}
+            ~usedSectors(){delete gitem;}
             QString texture;
             int x,y,w,h;
             USEDPIX currentType;            
@@ -105,8 +106,7 @@ public:
         };
         QList<usedSectors*> sectors;
         void addSector(const QString &texture, int x, int y, int w, int h, USEDPIX currentType)
-        {
-            //imgCtr->addSector("", 5,5,100,100, imgCuter::SPRITE);
+        {            
             usedSectors *sector = new usedSectors(texture, x,y,w,h, currentType);
             sector->gitem = new GraphicsRectItem();
             scene.addItem((QGraphicsItem*)sector->gitem);
@@ -133,6 +133,7 @@ public:
         {
             qDeleteAll(sectors);
             sectors.clear();
+            scene.update();
         }
 
 

@@ -1348,6 +1348,7 @@ void animatron::slotObjNameChanged( const QString & _text)
 
 void animatron::prepeareSectors()
 {
+    QMessageBox::information(0,0, "prepeareSectors()");
     imgCtr->clearSectors();
     QListIterator<sprite*> sit(sprites);
     while(sit.hasNext())

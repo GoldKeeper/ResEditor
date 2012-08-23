@@ -448,7 +448,7 @@ void ResEditor::objectSaved()
 
 void ResEditor::slotAbout()
 {
-    QString ver= "v 1.4";
+    QString ver= "v 1.4.1";
     QString text="";
     text+= tr("Редактор ресурсов") + ver + "\n" + tr("для проекта")+ " ORIGIN-WORLD\n";
     text+="http://origin-world.com\n\n";
@@ -486,6 +486,8 @@ void ResEditor::slotUpdateHistory()
     v1_1+="ver. 1.4:\n";
         v1_1+="1)Добавлено отображение уже использованных в объекте областей на текутуре\n";
         v1_1+="2)Испралена ошибка при выходе выделяемой области текстуры заэкран\n";
+    v1_1+="ver. 1.4.1:\n";
+        v1_1+="1)Исправлено редактирование спрайтов\n";
 
 
     QMessageBox::information(this, tr("История обновлений"), v1_1);
