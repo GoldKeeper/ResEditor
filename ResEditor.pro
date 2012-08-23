@@ -36,7 +36,8 @@ HEADERS  += reseditor.h \
     animatron/animatron.h \
     animatron/anim.h \
     resxmlparser.h \
-    animatron/graphicsunit.h
+    animatron/graphicsunit.h \
+    animatron/scrolleventfilter.h
 
 FORMS    += reseditor.ui \
     dialogTextures.ui \
@@ -51,6 +52,9 @@ CODECFORSRC = UTF-8
 
 RESOURCES += \
     reseditor.qrc
+
+
+
 
 
 

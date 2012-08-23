@@ -23,6 +23,7 @@
 #include <QWheelEvent>
 #include <QTranslator>
 
+#include "scrolleventfilter.h"
 
 class animatron : public QMainWindow
 {
@@ -49,8 +50,8 @@ public:
 
 	QGraphicsPixmapItem * createGraphicsItem(QString texture, int x, int y, int w, int h, QLabel * label=NULL);
 
- 	void closeEvent(QCloseEvent *)
- 	{delete this;}
+        void closeEvent(QCloseEvent *);
+        //{delete this;}
 
 	QString dir;
         QMap<QString, QString> allTextures;//<name, path>
@@ -81,6 +82,11 @@ private:
         void updateGrUnit(GraphicsUnit* gu);
 
         void prepeareSectors();
+
+        bool isedited;
+        bool tryExitNotSaved();
+
+        ScrollEventFilter * scrollEventFilter;
 	
 public:
 	QAction * actStartAnimation;
@@ -127,7 +133,7 @@ public slots:
 		void slotTransparent(bool);
 
 		void clickedOnWidget(QTreeWidgetItem * _treeWI){ ui.treeWidget->setCurrentItem(_treeWI);}
-                void dbkClickedOnWidget(QTreeWidgetItem * _treeWI) {editSprite();}
+                void dbkClickedOnWidget(QTreeWidgetItem * _treeWI);
 
 		void addSprite();
 		void removeSprite();
@@ -143,7 +149,7 @@ public slots:
 
 		void saveEditedImg(int,int,int,int, QString);
 		
-	public slots:
+
 		void changeActiveItem(QTreeWidgetItem*, QTreeWidgetItem*);
 		void slotObjNameChanged(const QString &);	
 		void moveT(){ui.spinBox_y->setValue(ui.spinBox_y->value()+1);}
@@ -157,10 +163,16 @@ public slots:
 
 		void updateScene();
 
+                void edited();
+                void saved();//edited
+
+                void changeScale(QWheelEvent*);
+                //void scrolled(int);
+
 signals:
 		void animationStart(void);
 		void animationStop(void);
-		void objectSaved(void);
+		void objectSaved(void);                
 
 };
 

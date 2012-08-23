@@ -6,6 +6,7 @@
 #include <QTreeWidget>
 #include <QPen>
 
+#include <./imgcuter/graphicsview.h>
 
 animatron::animatron(QWidget *parent, Qt::WFlags flags, QString translateFile)
 	: QMainWindow(parent, flags)
@@ -19,7 +20,20 @@ animatron::animatron(QWidget *parent, Qt::WFlags flags, QString translateFile)
 
 
 	ui.setupUi(this); 
+
+        ui.graphicsView = new GraphicsView(ui.centralwidget);
+        ui.graphicsView->setObjectName(QString::fromUtf8("graphicsView"));
+        ui.gridLayout->addWidget(ui.graphicsView, 0, 0, 1, 1);
+        connect( ui.graphicsView, SIGNAL(mouseWheelSignal(QWheelEvent*)), this, SLOT(changeScale(QWheelEvent*)));
+
+        //scrollEventFilter = new ScrollEventFilter(this);
+        //ui.graphicsView->installEventFilter(scrollEventFilter);
+        //connect(scrollEventFilter, SIGNAL(scrolled(int)), SLOT(scrolled(int)));
+
         imgCtr=new imgCuter(this, Qt::Dialog, translateFile);
+        imgCtr->setWindowModality(Qt::WindowModal);
+
+
         imgCtr->update();
 
 	connect(imgCtr, SIGNAL(saveingData(int,int,int,int, QString)),this, SLOT(saveEditedImg(int,int,int,int, QString)));
@@ -31,6 +45,7 @@ animatron::animatron(QWidget *parent, Qt::WFlags flags, QString translateFile)
 	transp=false;
 	zoomState=0;
 
+        isedited= false;
 
 	drawObject = new draw();
 	setupUiImg();	
@@ -105,6 +120,15 @@ void animatron::fillTree()
 
 			connect(drawObject, SIGNAL(updatePos()), ps, SLOT(updatePos()));
 
+                        //slot edited()
+                            connect(ps->widget->ui.checkBox_use, SIGNAL( toggled ( bool)), this, SLOT(edited()));
+                            connect(ps->widget->ui.checkBox_visible, SIGNAL( toggled ( bool)), this, SLOT(edited()));
+                            connect(ps->widget->ui.spinBox_x, SIGNAL(valueChanged ( int)), this, SLOT(edited()));
+                            connect(ps->widget->ui.spinBox_y, SIGNAL(valueChanged ( int)), this, SLOT(edited()));
+                            connect(ps->widget->ui.spinBox_z, SIGNAL(valueChanged ( int)), this, SLOT(edited()));
+                            connect(drawObject, SIGNAL(updatePos()), this, SLOT(edited()));
+
+
                         connect(ps->widget, SIGNAL(clicked(QTreeWidgetItem *)), this, SLOT(clickedOnWidget(QTreeWidgetItem *)));
                         connect(ps->widget, SIGNAL(doubleClicked(QTreeWidgetItem *)), this, SLOT(dbkClickedOnWidget(QTreeWidgetItem*)));
 				
@@ -123,7 +147,7 @@ void animatron::fillTree()
 	{	
 		anim * pa =ai.next();
 		//создние своего итема и передача указателя на спрайт
-		TreeWidgetItemAnim * qtwia = new TreeWidgetItemAnim((QTreeWidgetItem *)qtwi, TreeWidgetItemAnim::ANIMATION_SET);
+                TreeWidgetItemAnim * qtwia = new TreeWidgetItemAnim((QTreeWidgetItem *)qtwi, TreeWidgetItemAnim::ANIMATION_SET);
                 qtwia->setText(0, tr("Анимация"));
 		qtwia->setIcon(0,QPixmap(":/ResEditor/Resources/animatron/films.png"));
 		qtwia->oneAnim=pa;
@@ -161,6 +185,16 @@ void animatron::fillTree()
 		connect(pa->widget->ui.spinBox_z, SIGNAL(valueChanged ( int)), pa, SLOT(set_z(int )));
 
 		connect(drawObject, SIGNAL(updatePos()), pa, SLOT(updateAllPos()));
+
+                //for edited()
+                connect(pa->spinBox_time, SIGNAL(valueChanged(int)), this, SLOT(edited()));
+                connect(pa->widget->ui.checkBox_use, SIGNAL( toggled ( bool)), this, SLOT(edited()));
+                connect(pa->widget->ui.checkBox_visible, SIGNAL( toggled ( bool)), this, SLOT(edited()));
+                connect(pa->widget->ui.spinBox_x, SIGNAL(valueChanged ( int)), this, SLOT(edited()));
+                connect(pa->widget->ui.spinBox_y, SIGNAL(valueChanged ( int)), this, SLOT(edited()));
+                connect(pa->widget->ui.spinBox_z, SIGNAL(valueChanged ( int)), this, SLOT(edited()));
+                connect(drawObject, SIGNAL(updatePos()), this, SLOT(edited()));
+
 
 		connect(this, SIGNAL(animationStart()), pa, SLOT(slotStartAnimation()));
 		connect(this, SIGNAL(animationStop()), pa, SLOT(slotStopAnimation()));
@@ -207,6 +241,7 @@ void animatron::fillTree()
 
 			connect(frm->widget->ui.checkBox_visible, SIGNAL(toggled ( bool)), frm, SLOT(setVisiblity(bool)));
 			connect(frm->widget->ui.checkBox_use, SIGNAL(toggled ( bool)), frm, SLOT(setUsibility(bool)));
+
 
                         connect(frm->widget, SIGNAL(clicked(QTreeWidgetItem *)), this, SLOT(clickedOnWidget(QTreeWidgetItem *)));
                         connect(frm->widget, SIGNAL(doubleClicked(QTreeWidgetItem *)), this, SLOT(dbkClickedOnWidget(QTreeWidgetItem*)));
@@ -416,6 +451,17 @@ void animatron::setupUiImg()
 	connect(ui.btn_r, SIGNAL(clicked()), SLOT(moveR()));
 	connect(ui.btn_b, SIGNAL(clicked()), SLOT(moveB()));
 	connect(ui.btn_t, SIGNAL(clicked()), SLOT(moveT()));
+
+        //edited()
+        connect(ui.btn_lt, SIGNAL(clicked()), SLOT(edited()));
+        connect(ui.btn_rt, SIGNAL(clicked()), SLOT(edited()));
+        connect(ui.btn_lb, SIGNAL(clicked()), SLOT(edited()));
+        connect(ui.btn_rb, SIGNAL(clicked()), SLOT(edited()));
+        connect(ui.btn_l, SIGNAL(clicked()), SLOT(edited()));
+        connect(ui.btn_r, SIGNAL(clicked()), SLOT(edited()));
+        connect(ui.btn_b, SIGNAL(clicked()), SLOT(edited()));
+        connect(ui.btn_t, SIGNAL(clicked()), SLOT(edited()));
+
 }
 
 void animatron::connectUi()
@@ -427,6 +473,19 @@ void animatron::connectUi()
 	connect(ui.spinBox_h, SIGNAL(valueChanged(int)), drawObject, SLOT(setH(int)));
 	connect(drawObject, SIGNAL(updatePos()), this, SLOT(updateScene()));
 	connect(ui.treeWidget,SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(changeActiveItem(QTreeWidgetItem*, QTreeWidgetItem*)));
+
+        connect(this, SIGNAL(objectSaved()), SLOT(saved()));
+        connect(ui.le_name,SIGNAL(textChanged ( const QString &)), SLOT(edited()));
+        connect(ui.spinBox_x, SIGNAL(valueChanged(int)), SLOT(edited()));
+        connect(ui.spinBox_y, SIGNAL(valueChanged(int)), SLOT(edited()));
+        connect(ui.spinBox_w, SIGNAL(valueChanged(int)), SLOT(edited()));
+        connect(ui.spinBox_h, SIGNAL(valueChanged(int)), SLOT(edited()));
+
+
+        //connect(ui., SIGNAL(objectSaved()), SLOT(edited()));
+
+
+        //edited();
 }
 
 void animatron::updateScene()
@@ -580,7 +639,7 @@ void animatron::deleteAllObjects()
 		}
 		delete anm->widget;
 		delete anm;
-	}
+	}        
 }
 
 void animatron::createActions()
@@ -764,6 +823,7 @@ void animatron::addNewSprite( int _z, int _dx, int _dy, QString _texture, int _x
 
 	ui.treeWidget->setCurrentItem(qtwis);
 	editSprite();
+        edited();
 }
 
 
@@ -779,8 +839,11 @@ void animatron::removeSprite()
                 delete stwi->oneSprite->grRectItem;//удаление рамки
 		delete stwi->oneSprite;//удалить сам объект
 		stwi->oneSprite=NULL;
-		stwi->parent()->removeChild(stwi);//удалить из дерева
+                stwi->parent()->removeChild(stwi);//удалить из дерева
+                edited();
 	}
+
+
 }
 
 void animatron::editSprite()
@@ -803,6 +866,7 @@ void animatron::editSprite()
 void animatron::addAnimation()
 {
 	addNewAnim(11, 0,0, 2000);
+        edited();
 }
 
 
@@ -877,6 +941,7 @@ void animatron::removeAnimation()
  	delete treeWItem->oneAnim;	
  	treeWItem->parent()->removeChild(treeWidgetItem);
  	delete treeWItem;
+        edited();
 }
 
 void animatron::addFrame()
@@ -968,6 +1033,7 @@ void animatron::addNewFrame( QString _texture, int _x, int _y, int _w, int _h )
  	qgrid->addItem(verticalSpacerS,qgrid->rowCount() , 0, 1, 1);
 	ui.treeWidget->setCurrentItem(ftwi);
 	editFrame();
+        edited();
 }
 
 void animatron::removeFrame()
@@ -987,8 +1053,10 @@ void animatron::removeFrame( QTreeWidgetItem * _twi)
                 delete stwi->oneFrame->grRectItem;//удаление рамки
  		delete stwi->oneFrame;//удалить сам объект
 		stwi->oneFrame=NULL;
- 		delete  stwi;//удалить из дерева
+                delete  stwi;//удалить из дерева
+                edited();
 	}
+
 }
 
 
@@ -1043,7 +1111,7 @@ void animatron::saveEditedImg( int _x,int _y,int _w, int _h, QString _texture)
 			oneFrame->tex_h=_h;
 			oneFrame->texture=_texture;
                         updateGrUnit(oneFrame);
-		}
+		}                
 }
 
 void animatron:: updateGrUnit(GraphicsUnit* gu)
@@ -1060,6 +1128,7 @@ void animatron:: updateGrUnit(GraphicsUnit* gu)
     }
     gu->widget->ui.label->setPixmap(pxm);
     gu->grRectItem->setRect(gu->grRectItem->rect().x(), gu->grRectItem->rect().y(), gu->tex_w, gu->tex_h);
+    edited();
 }
 
 void animatron::slotSaveDraw()
@@ -1344,11 +1413,12 @@ void animatron::deleteUslessNodes()
 void animatron::slotObjNameChanged( const QString & _text)
 {
     drawObject->name=_text;
+    edited();
 }
 
 void animatron::prepeareSectors()
 {
-    QMessageBox::information(0,0, "prepeareSectors()");
+    //QMessageBox::information(0,0, "prepeareSectors()");
     imgCtr->clearSectors();
     QListIterator<sprite*> sit(sprites);
     while(sit.hasNext())
@@ -1369,5 +1439,91 @@ void animatron::prepeareSectors()
     }
 }
 
+void animatron::edited()
+{
+    isedited = true;
+}
 
+void animatron::saved()
+{
+    isedited = false;
+}
 
+void animatron::closeEvent(QCloseEvent *e)
+{
+    if(isedited)
+    {
+        if(tryExitNotSaved())
+            delete this;
+        else
+            e->ignore();
+    }
+}
+
+bool animatron::tryExitNotSaved()
+{
+    int n = QMessageBox::warning(0,
+                          tr("Внимание"),
+                          tr("Внесены изменения."),
+                          tr("Сохранить"),
+                          tr("Не сохранять"),
+                          tr("Отмена"),
+                          0,
+                          1
+                          );
+
+    switch(n)
+    {
+        case 0: slotSaveDraw(); return true;
+        case 1: return true;
+        case 2: return false;
+    }
+
+    return false;
+}
+
+void animatron::dbkClickedOnWidget(QTreeWidgetItem *_treeWI)
+{
+    TreeWidgetItemAnim* stwi=(TreeWidgetItemAnim*)ui.treeWidget->currentItem();
+    if(stwi->type()==TreeWidgetItemAnim::ONE_SPRITE)
+        editSprite();
+    else if(stwi->type()==TreeWidgetItemAnim::ANIMATION_FRAME)
+        editFrame();
+}
+
+//void animatron::scrolled(int delta)
+//{
+//    if(delta>0)
+//    {
+//        slotZoomIn();
+//    }
+//    else
+//    {
+//        slotZoomOut();
+//    }
+//}
+
+void animatron::changeScale( QWheelEvent * e)
+{
+
+        if(e->delta()>0)
+        {
+            //QMessageBox::information(0,0, QString::number(e->pos().x()));
+            //ui.graphicsView->scene()
+            slotZoomIn();
+//		if(sceneScale<5)
+//		{
+//			sceneScale++;
+//			graphicsView->scale(2,2);
+//		}
+        }
+        else
+        {
+            slotZoomOut();
+//		if(sceneScale>-5)
+//		{
+//			sceneScale--;
+//			graphicsView->scale(0.5,0.5);
+//		}
+        }
+}

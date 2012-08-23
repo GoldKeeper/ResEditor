@@ -21,7 +21,7 @@ imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags, QString translateFile)
     }
     qApp->installTranslator(translator);
 
-	ui.setupUi(this);        
+        ui.setupUi(this);
         graphicsView = new GraphicsView(ui.centralWidget);
 	graphicsView->setObjectName(QString::fromUtf8("graphicsView"));
 	ui.gridLayout_6->addWidget(graphicsView, 0, 0, 1, 1);
@@ -556,7 +556,7 @@ void imgCuter::saveData()
 void imgCuter::changeScale( QWheelEvent * e)
 {
 	
-	if(e->delta()>0)
+        if(e->delta()>0)
 	{
 		if(sceneScale<5)
 		{

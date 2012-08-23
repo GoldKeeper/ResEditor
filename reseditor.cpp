@@ -350,6 +350,7 @@ void ResEditor::slotEditObject()
                     animatronObj = new animatron(this, Qt::Dialog, translFile);
                     animatronObj->setWindowModality(Qt::WindowModal);
                     connect(animatronObj, SIGNAL(objectSaved()), this, SLOT(objectSaved()));
+                    connect(animatronObj, SIGNAL(destroyed()),SLOT(setCurrentWindowActive()));
                     animatronObj->allTextures.unite(ResXmlParser::Instance().allTextures);
                     animatronObj->imgCtr->mapTextures.unite(ResXmlParser::Instance().allTextures);
                    animatronObj->dir=xmlFileWorkDir;
@@ -444,11 +445,13 @@ void ResEditor::objectSaved()
         ui->treeWidget->currentItem()->setText(3, newObjName);        
         isEdited=true;
         setWindowTitleRE(true);
+
+         QApplication::setActiveWindow(this);
 }
 
 void ResEditor::slotAbout()
 {
-    QString ver= "v 1.4.1";
+    QString ver= "v 1.4.2";
     QString text="";
     text+= tr("Редактор ресурсов") + ver + "\n" + tr("для проекта")+ " ORIGIN-WORLD\n";
     text+="http://origin-world.com\n\n";
@@ -554,9 +557,9 @@ bool ResEditor::tryExitNotSaved()
 
     switch(n)
     {
-        case 0: slotSaveXml(); return true; break;
-        case 1: return true; break;
-        case 2: return false; break;
+        case 0: slotSaveXml(); return true;
+        case 1: return true;
+        case 2: return false;
     }
 
     return false;
@@ -581,6 +584,11 @@ void ResEditor::changeEvent(QEvent *event)
 void ResEditor::slotAboutQt()
 {
     QMessageBox::aboutQt(this);
+}
+
+void ResEditor::setCurrentWindowActive()
+{
+    QApplication::setActiveWindow(this);
 }
 
 

@@ -90,6 +90,7 @@ protected slots:
         void slotChangeLang(QAction *);
 
         void slotAboutQt();
+        void setCurrentWindowActive();
 };
 
 #endif // RESEDITOR_H
