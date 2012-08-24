@@ -1,4 +1,4 @@
-﻿#include "animatron.h"
+#include "animatron.h"
 #include <QLayout>
 #include <QGridLayout> 
 #include <QLabel>
