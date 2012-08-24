@@ -473,6 +473,9 @@ void animatron::connectUi()
 	connect(ui.spinBox_h, SIGNAL(valueChanged(int)), drawObject, SLOT(setH(int)));
 	connect(drawObject, SIGNAL(updatePos()), this, SLOT(updateScene()));
 	connect(ui.treeWidget,SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(changeActiveItem(QTreeWidgetItem*, QTreeWidgetItem*)));
+        connect(ui.treeWidget,SIGNAL(itemDoubleClicked ( QTreeWidgetItem *, int)), SLOT(slotTreeWidgetItemDoubleClicked(QTreeWidgetItem*, int)));
+        //connect(ui.treeWidget, SIGNAL( 	itemEntered ( QTreeWidgetItem *, int)),SLOT(slotItemEntered ( QTreeWidgetItem *, int)));
+        //void 	itemDoubleClicked ( QTreeWidgetItem * item, int column )
 
         connect(this, SIGNAL(objectSaved()), SLOT(saved()));
         connect(ui.le_name,SIGNAL(textChanged ( const QString &)), SLOT(edited()));
@@ -496,7 +499,7 @@ void animatron::updateScene()
 
 void animatron::changeActiveItem( QTreeWidgetItem* currentItem, QTreeWidgetItem*lastItem )
 {
-	TreeWidgetItemAnim* twia;
+        TreeWidgetItemAnim* twia;
 	if((currentItem->type()== TreeWidgetItemAnim::SPRITES)||(currentItem->type()== TreeWidgetItemAnim::ANIMATION_SET))
 	{
 		ui.scrollArea->takeWidget();
@@ -506,8 +509,8 @@ void animatron::changeActiveItem( QTreeWidgetItem* currentItem, QTreeWidgetItem*
 
 	switch(currentItem->type())
 	{
-        case TreeWidgetItemAnim::SPRITES		 : ui.dockWidget_widgets->setWindowTitle(tr("Спрайты объекта")); break;
-		case TreeWidgetItemAnim::ONE_SPRITE	 : 
+                case TreeWidgetItemAnim::SPRITES : ui.dockWidget_widgets->setWindowTitle(tr("Спрайты объекта")); break;
+                case TreeWidgetItemAnim::ONE_SPRITE:
 				ui.scrollArea->takeWidget();
 				twia = (TreeWidgetItemAnim*)(currentItem->parent());
 				ui.scrollArea->setWidget(twia->widget);
@@ -526,7 +529,7 @@ void animatron::changeActiveItem( QTreeWidgetItem* currentItem, QTreeWidgetItem*
 				//QMessageBox::information(0,0,"ANIMATIONS childs count 0");
 			}
 			break;
-        case TreeWidgetItemAnim::ANIMATION_SET : ui.dockWidget_widgets->setWindowTitle(tr("Фреймы одной анимации")); break;
+                case TreeWidgetItemAnim::ANIMATION_SET : ui.dockWidget_widgets->setWindowTitle(tr("Фреймы одной анимации")); break;
 		case TreeWidgetItemAnim::ANIMATION_FRAME:
 				ui.scrollArea->takeWidget();
 				twia = (TreeWidgetItemAnim*)(currentItem->parent());
@@ -570,6 +573,17 @@ void animatron::changeActiveWidget( QTreeWidgetItem* currentItem, QTreeWidgetIte
 	}
 }
 
+
+
+//void animatron::slotItemEntered ( QTreeWidgetItem * item, int column )
+//{
+//    QMessageBox::information(0,0, QString::number(column));
+//    switch(item->type())
+//    {
+//        case TreeWidgetItemAnim::ONE_SPRITE: ui.statusbar->showMessage("ONE_SPRITE"); break;
+//        case TreeWidgetItemAnim::ANIMATION_FRAME: ui.statusbar->showMessage("ANIMATION_FRAME"); break;
+//    }
+//}
 
 void animatron::setEnabledAction( int _t)
 {
@@ -1484,6 +1498,20 @@ bool animatron::tryExitNotSaved()
 
 void animatron::dbkClickedOnWidget(QTreeWidgetItem *_treeWI)
 {
+    TreeWidgetItemAnim* stwi=(TreeWidgetItemAnim*)ui.treeWidget->currentItem();
+    if(stwi->type()==TreeWidgetItemAnim::ONE_SPRITE)
+        editSprite();
+    else if(stwi->type()==TreeWidgetItemAnim::ANIMATION_FRAME)
+        editFrame();
+}
+
+void animatron::slotTreeWidgetItemDoubleClicked(QTreeWidgetItem* currentItem, int)
+{
+   // switch(currentItem->type())
+    ///{/
+        //case TreeWidgetItemAnim::ONE_SPRITE: editSprite(); break;
+        //case TreeWidgetItemAnim::ANIMATION_FRAME: editFrame(); break;
+    //}
     TreeWidgetItemAnim* stwi=(TreeWidgetItemAnim*)ui.treeWidget->currentItem();
     if(stwi->type()==TreeWidgetItemAnim::ONE_SPRITE)
         editSprite();

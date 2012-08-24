@@ -12,7 +12,7 @@
 
 
 imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags, QString translateFile)
-	: QMainWindow(parent, flags)
+    : QMainWindow(parent, flags), isEdited(false)
 {
     translator = new QTranslator(this);
     if (!translateFile.isEmpty())
@@ -22,6 +22,7 @@ imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags, QString translateFile)
     qApp->installTranslator(translator);
 
         ui.setupUi(this);
+        ui.groupBox_2->hide();
         graphicsView = new GraphicsView(ui.centralWidget);
 	graphicsView->setObjectName(QString::fromUtf8("graphicsView"));
 	ui.gridLayout_6->addWidget(graphicsView, 0, 0, 1, 1);
@@ -29,6 +30,7 @@ imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags, QString translateFile)
 	graphicsView->setMouseTracking(true);
 	createActions();
 	ui.btnSave->setIcon(QPixmap(":/ResEditor/Resources/imgcuter/disk.png"));
+        ui.btnSaveAndExit->setIcon(QPixmap(":/ResEditor/Resources/imgcuter/disk--arrow.png"));
 
 	scene.setSceneRect(0,0,10, 10);
 	
@@ -56,6 +58,13 @@ imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags, QString translateFile)
 	connect(ui.spb_W, SIGNAL(valueChanged (int)),SLOT(changeRectOnWidth( int)));
 	connect(ui.spb_H, SIGNAL(valueChanged (int)),SLOT(changeRectOnHeight( int)));
 
+        connect(ui.spb_X, SIGNAL(valueChanged (int)),SLOT(slotSetEdited()));
+        connect(ui.spb_Y, SIGNAL(valueChanged (int)),SLOT(slotSetEdited()));
+        connect(ui.spb_W, SIGNAL(valueChanged (int)),SLOT(slotSetEdited()));
+        connect(ui.spb_H, SIGNAL(valueChanged (int)),SLOT(slotSetEdited()));
+
+
+
 	connect(this, SIGNAL(movedRectToX(int )), ui.spb_X,SLOT(setValue(int))) ;
 	connect(this, SIGNAL(movedRectToY(int )), ui.spb_Y, SLOT(setValue( int))) ;
 	connect(this, SIGNAL(sizedRectToW(int )), ui.spb_W, SLOT(setValue( int))) ;
@@ -70,7 +79,9 @@ imgCuter::imgCuter(QWidget *parent, Qt::WFlags flags, QString translateFile)
 	connect(ui.btnChangeTexture, SIGNAL(clicked()), SLOT(loadTexture()));
 
 	connect(ui.comboBoxTextures, SIGNAL(currentIndexChanged ( int)),SLOT(changeTexture()));
+        connect(ui.comboBoxTextures, SIGNAL(currentIndexChanged ( int)),SLOT(slotSetEdited()));
 	connect(ui.btnSave, SIGNAL(clicked()),SLOT(saveData()));
+        connect(ui.btnSaveAndExit, SIGNAL(clicked()), SLOT(saveDataAndExit()));
 
 
  	directory="NOT initialized";
@@ -178,6 +189,8 @@ void imgCuter::createActions()
 {
     saveAction = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/disk.png") ,tr("Сохранить"));
 connect(saveAction,SIGNAL(triggered()), this, SLOT(saveData()));
+    saveAndExitAction = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/disk--arrow.png") ,tr("Сохранить и выйти"));
+connect(saveAndExitAction,SIGNAL(triggered()), this, SLOT(saveDataAndExit()));
 textureUpdate = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/arrow-circle-double.png"),tr("Обновить текстуру"));
 connect(textureUpdate,SIGNAL(triggered()),this,SLOT(slotTextureUpdate()));
 layerChes = ui.mainToolBar->addAction(QPixmap(":/ResEditor/Resources/imgcuter/layer-transparent.png"),tr("Шахматный фон"));
@@ -549,8 +562,8 @@ void imgCuter::saveData()
 // 		//.arg(ui.spb_Z->value())
 // 		;
 	//QMessageBox::information(this,0,  qstr);
-
-	emit saveingData(ui.spb_X->value(),ui.spb_Y->value(),ui.spb_W->value(),ui.spb_H->value(), ui.comboBoxTextures->currentText());
+    isEdited= true;
+    emit saveingData(ui.spb_X->value(),ui.spb_Y->value(),ui.spb_W->value(),ui.spb_H->value(), ui.comboBoxTextures->currentText());
 }
 
 void imgCuter::changeScale( QWheelEvent * e)
@@ -591,6 +604,7 @@ void imgCuter::setSprite( QString textureName, int x, int y, int w, int h )
 	ui.spb_H->setValue(h);
         selectionRect->setRect(x,y,w,h);
 	rePutHolders();
+        isEdited=false;
 }
 
 void imgCuter::slotTextureUpdate()
@@ -680,7 +694,74 @@ void imgCuter::resetShownSectors()
     }
 }
 
+void imgCuter::saveDataAndExit()
+{
+    saveData();
+    setVisible(false);
+}
 
+void imgCuter::closeEvent(QCloseEvent *e)
+{
+    if(isEdited)
+    {
+        if(tryExitNotSaved())
+        {
+            e->accept();
+        }
+          else
+        {
+            e->ignore();
+        }
+    }
+}
+
+void imgCuter::slotSetEdited()
+{
+    isEdited=true;
+}
+
+
+bool imgCuter::tryExitNotSaved()
+{
+    int n = QMessageBox::warning(0,
+                          tr("Внимание"),
+                          tr("Внесены изменения."),
+                          tr("Сохранить"),
+                          tr("Не сохранять"),
+                          tr("Отмена"),
+                          0,
+                          1
+                          );
+
+    switch(n)
+    {
+        case 0: saveDataAndExit(); return true;
+        case 1: return true;
+        case 2: return false;
+    }
+
+    return false;
+}
+
+void imgCuter::keyPressEvent(QKeyEvent *e)
+{
+    QMessageBox::information(0,0, QString("key pressed %1").arg(e->key()) );
+    if(e->key() == Qt::Key_Escape)
+    {
+        QMessageBox::information(0,0, QString("key pressed %1").arg(e->key()) );
+        if(isEdited)
+        {
+            if (tryExitNotSaved())
+            {
+                setVisible(false);
+            }
+        }
+        else
+        {
+            setVisible(false);
+        }
+    }
+}
 
 
 

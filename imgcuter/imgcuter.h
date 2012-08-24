@@ -32,9 +32,14 @@ public:
 
 private:
 	Ui::imgCuterClass ui;
-	GraphicsView * graphicsView;
+        GraphicsView * graphicsView;
+
+        bool isEdited;
 
 public:
+        void keyPressEvent(QKeyEvent *);
+        void closeEvent(QCloseEvent *);
+        bool tryExitNotSaved();
 	void createActions();
 
 	QMap<QString,QString> mapTextures;
@@ -83,7 +88,8 @@ public:
 	void getMinimap(bool b=false);
 	void getCrop();
 
-	QAction * saveAction;
+        QAction * saveAction;
+        QAction * saveAndExitAction;
 	QAction * textureUpdate;
 	QAction * layerChes;
 	QAction * zoomIn;
@@ -141,7 +147,8 @@ public:
 public slots:
 	void loadTexture();
 	void changeTexture();
-	void saveData();	
+        void saveData();
+        void saveDataAndExit();
 
 	void mouseMoveSlot(QGraphicsSceneMouseEvent * _e);
 	void mousePressSlot(QGraphicsSceneMouseEvent * _e);
@@ -171,6 +178,8 @@ public slots:
         void slotSpritesShow(bool b);
         void slotFramesShow(bool b);
         void resetShownSectors();
+
+        void slotSetEdited();
 
 signals:
 	void movedRectToX(int);

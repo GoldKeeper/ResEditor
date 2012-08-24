@@ -71,6 +71,7 @@
         <file>Resources/flag_russia.png</file>
         <file>Resources/flag_great_britain.png</file>
         <file>Resources/qt-logo.png</file>
+        <file>Resources/imgcuter/disk--arrow.png</file>
     </qresource>
     <qresource prefix="/lang">
         <file>reseditor_eng.qm</file>

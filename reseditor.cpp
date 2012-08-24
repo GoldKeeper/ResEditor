@@ -451,7 +451,7 @@ void ResEditor::objectSaved()
 
 void ResEditor::slotAbout()
 {
-    QString ver= "v 1.4.2";
+    QString ver= "v 1.4.3";
     QString text="";
     text+= tr("Редактор ресурсов") + ver + "\n" + tr("для проекта")+ " ORIGIN-WORLD\n";
     text+="http://origin-world.com\n\n";

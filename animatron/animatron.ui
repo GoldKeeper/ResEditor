@@ -54,6 +54,9 @@
      </property>
      <item row="0" column="0">
       <widget class="QTreeWidget" name="treeWidget">
+       <property name="mouseTracking">
+        <bool>false</bool>
+       </property>
        <attribute name="headerVisible">
         <bool>false</bool>
        </attribute>

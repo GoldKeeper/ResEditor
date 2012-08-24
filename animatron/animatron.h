@@ -151,6 +151,8 @@ public slots:
 		
 
 		void changeActiveItem(QTreeWidgetItem*, QTreeWidgetItem*);
+                void slotTreeWidgetItemDoubleClicked(QTreeWidgetItem*, int);
+                //void slotItemEntered ( QTreeWidgetItem * item, int column );
 		void slotObjNameChanged(const QString &);	
 		void moveT(){ui.spinBox_y->setValue(ui.spinBox_y->value()+1);}
 		void moveL(){ui.spinBox_x->setValue(ui.spinBox_x->value()+1);}
