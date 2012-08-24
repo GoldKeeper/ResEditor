@@ -745,10 +745,8 @@ bool imgCuter::tryExitNotSaved()
 
 void imgCuter::keyPressEvent(QKeyEvent *e)
 {
-    QMessageBox::information(0,0, QString("key pressed %1").arg(e->key()) );
     if(e->key() == Qt::Key_Escape)
     {
-        QMessageBox::information(0,0, QString("key pressed %1").arg(e->key()) );
         if(isEdited)
         {
             if (tryExitNotSaved())
