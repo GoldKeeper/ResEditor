@@ -1,4 +1,4 @@
-﻿#ifndef RESEDITOR_H
+#ifndef RESEDITOR_H
 #define RESEDITOR_H
 
 #include <QMainWindow>

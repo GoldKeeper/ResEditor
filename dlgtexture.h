@@ -1,4 +1,4 @@
-﻿#ifndef DLGTEXTURE_H
+#ifndef DLGTEXTURE_H
 #define DLGTEXTURE_H
 
 #include "ui_dialogTextures.h"

@@ -1,4 +1,4 @@
-﻿#ifndef RESXMLPARSER_H
+#ifndef RESXMLPARSER_H
 #define RESXMLPARSER_H
 
 #include <QMap>
