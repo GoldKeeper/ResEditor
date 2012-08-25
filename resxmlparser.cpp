@@ -1,4 +1,4 @@
-﻿#include "resxmlparser.h"
+#include "resxmlparser.h"
 #include <QMessageBox>
 
 bool ResXmlParser::peraseXml(const QString &file, QTreeWidget *pqTreeWidgetee, QHash<QTreeWidgetItem*, QDomNode> * _treeNodes)

@@ -1,4 +1,4 @@
-﻿#include "reseditor.h"
+#include "reseditor.h"
 #include "ui_reseditor.h"
 
 #include <QToolBar>
