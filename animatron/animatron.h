@@ -51,6 +51,7 @@ public:
 	QGraphicsPixmapItem * createGraphicsItem(QString texture, int x, int y, int w, int h, QLabel * label=NULL);
 
         void closeEvent(QCloseEvent *);
+        void keyPressEvent(QKeyEvent *);
         //{delete this;}
 
 	QString dir;

@@ -1226,8 +1226,8 @@ void animatron::slotSaveDraw()
                          //QMessageBox::information(0,0,"он в серии");
                         if(_frame->seriesNum==0)//если номер в серии 0 - тоесть это первый / серия началась
                         {
-                            //ПРОВЕРИТЬ НА ОКОНЧЕННОСТЬ ПРОШЛОЙ СЕРИИ
-                           //QMessageBox::information(0,0,"причём ПЕРВЫЙ");
+                            //П� ОВЕ� ИТЬ НА ОКОНЧЕННОСТЬ П� ОШЛОЙ СЕ� ИИ
+                           //QMessageBox::information(0,0,"причём ПЕ� ВЫЙ");
                             seriesBegin=true;//серия началась
                             lastSF=0;//последним фреймом был первый (этот)
                             _LASTframe=_frame;//последний фрейм - это текущий
@@ -1505,13 +1505,8 @@ void animatron::dbkClickedOnWidget(QTreeWidgetItem *_treeWI)
         editFrame();
 }
 
-void animatron::slotTreeWidgetItemDoubleClicked(QTreeWidgetItem* currentItem, int)
+void animatron::slotTreeWidgetItemDoubleClicked(QTreeWidgetItem* , int)
 {
-   // switch(currentItem->type())
-    ///{/
-        //case TreeWidgetItemAnim::ONE_SPRITE: editSprite(); break;
-        //case TreeWidgetItemAnim::ANIMATION_FRAME: editFrame(); break;
-    //}
     TreeWidgetItemAnim* stwi=(TreeWidgetItemAnim*)ui.treeWidget->currentItem();
     if(stwi->type()==TreeWidgetItemAnim::ONE_SPRITE)
         editSprite();
@@ -1519,39 +1514,27 @@ void animatron::slotTreeWidgetItemDoubleClicked(QTreeWidgetItem* currentItem, in
         editFrame();
 }
 
-//void animatron::scrolled(int delta)
-//{
-//    if(delta>0)
-//    {
-//        slotZoomIn();
-//    }
-//    else
-//    {
-//        slotZoomOut();
-//    }
-//}
-
 void animatron::changeScale( QWheelEvent * e)
 {
 
         if(e->delta()>0)
         {
-            //QMessageBox::information(0,0, QString::number(e->pos().x()));
-            //ui.graphicsView->scene()
             slotZoomIn();
-//		if(sceneScale<5)
-//		{
-//			sceneScale++;
-//			graphicsView->scale(2,2);
-//		}
         }
         else
         {
             slotZoomOut();
-//		if(sceneScale>-5)
-//		{
-//			sceneScale--;
-//			graphicsView->scale(0.5,0.5);
-//		}
         }
+}
+
+void animatron::keyPressEvent(QKeyEvent *e)
+{
+    if(e->key() == Qt::Key_Escape)
+        if(isedited)
+        {
+            if(tryExitNotSaved())
+                delete this;
+        }
+        else
+            delete this;
 }
