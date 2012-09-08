@@ -77,7 +77,7 @@ void ResEditor::prepeareActions()
         connect(actDeletTexture,SIGNAL(triggered()),this,SLOT(slotDeletTexture()));
         actAddObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--plus.png"), tr("Добавить объект"));
         connect(actAddObject,SIGNAL(triggered()),this,SLOT(slotAddObject()));
-        actEditObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--pencil.png"), tr("Редактировать объект"));
+        actEditObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--pencil.png"), tr("� едактировать объект"));
         connect(actEditObject,SIGNAL(triggered()),this,SLOT(slotEditObject()));
         actDeleteObject=ui->mainToolBar->addAction(QPixmap(":/ResEditor/Resources/folder--minus.png"), tr("Удалить объект"));
         connect(actDeleteObject,SIGNAL(triggered()),this,SLOT(slotDeleteObject()));
@@ -107,7 +107,7 @@ void ResEditor::prepeareActions()
         QActionGroup * actionGroup = new QActionGroup(this);
         QAction * action= NULL;
 
-        action = ui->menuLang->addAction(QPixmap(":/ResEditor/Resources/flag_russia.png"), tr("Русский"));
+        action = ui->menuLang->addAction(QPixmap(":/ResEditor/Resources/flag_russia.png"), tr("� усский"));
         action->setCheckable(true);
         action->setChecked(true);
         actionGroup->addAction(action);
@@ -127,7 +127,7 @@ void ResEditor::retranslate()
     actAddTexture->setText(tr("Добавить текстуру"));
     actDeletTexture->setText(tr("Удалить текстуру"));
     actAddObject->setText(tr("Добавить объект"));
-    actEditObject->setText(tr("Редактировать объект"));
+    actEditObject->setText(tr("� едактировать объект"));
     actDeleteObject->setText(tr("Удалить объект"));
     actCopyObject->setText(tr("Копировать объект"));
 
@@ -146,7 +146,7 @@ void ResEditor::retranslateTree()
 
 void ResEditor::setWindowTitleRE(const bool &isEdited)
 {
-    setWindowTitle( tr("Редактор ресурсов: ") + xmlFileName + (isEdited?"*":""));
+    setWindowTitle( tr("� едактор ресурсов: ") + xmlFileName + (isEdited?"*":""));
 }
 
 void ResEditor::slotOpenXml()
@@ -451,7 +451,7 @@ void ResEditor::objectSaved()
 
 void ResEditor::slotAbout()
 {
-    QString ver= "v 1.4.3";
+    QString ver= "v 1.4.5";
     QString text="";
     text+= tr("Редактор ресурсов") + ver + "\n" + tr("для проекта")+ " ORIGIN-WORLD\n";
     text+="http://origin-world.com\n\n";

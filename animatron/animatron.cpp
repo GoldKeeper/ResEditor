@@ -1456,6 +1456,7 @@ void animatron::prepeareSectors()
 void animatron::edited()
 {
     isedited = true;
+    ui.statusbar->showMessage("");
 }
 
 void animatron::saved()
@@ -1530,11 +1531,29 @@ void animatron::changeScale( QWheelEvent * e)
 void animatron::keyPressEvent(QKeyEvent *e)
 {
     if(e->key() == Qt::Key_Escape)
+    {
+                     //QMessageBox::information(0,0, "Qt::Key_Escape");
         if(isedited)
         {
             if(tryExitNotSaved())
                 delete this;
         }
         else
+        {
             delete this;
+        }
+    }
+    else if(e->key() == Qt::Key_S)
+    {
+         if(e->modifiers()==Qt::ControlModifier)
+         {
+             //QMessageBox::information(0,0, "Qt::Key_S + Qt::ControlModifier");
+             slotSaveDraw();
+             ui.statusbar->showMessage("saved");
+         }
+         else
+         {
+                         // QMessageBox::information(0,0, "Qt::Key_S");
+         }
+    }
 }

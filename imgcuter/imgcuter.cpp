@@ -759,6 +759,13 @@ void imgCuter::keyPressEvent(QKeyEvent *e)
             setVisible(false);
         }
     }
+    else if(e->key() == Qt::Key_S)
+    {
+         if(e->modifiers()==Qt::ControlModifier)
+         {
+             saveData();//saveDataAndExit();
+         }
+    }
 }
 
 
